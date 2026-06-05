@@ -1,0 +1,23 @@
+AutoCareX Email Verification Setup
+
+Email verification is still ON.
+
+Default local testing:
+- If you do not set Gmail credentials, AutoCareX will NOT send to a real inbox.
+- The verification email/link will print in the terminal where you run:
+  python manage.py runserver
+- Copy the line that starts with:
+  AutoCareX verification link for ...
+
+Real Gmail inbox sending:
+1. Create a Google App Password from your Google Account.
+2. In Command Prompt, run these before starting the server:
+
+   set EMAIL_HOST_USER=yourgmail@gmail.com
+   set EMAIL_HOST_PASSWORD=your16characterapppassword
+   set SITE_URL=http://127.0.0.1:8000
+   python manage.py runserver
+
+Important:
+- Do not put your Gmail app password directly inside settings.py.
+- If an old password was pushed to GitHub, revoke it and create a new one.

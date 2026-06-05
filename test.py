@@ -1,4 +1,4 @@
-step by step
+# step by step
 
 # 1. command prompt
 # 2. open folder inside command prompt

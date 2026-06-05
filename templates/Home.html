@@ -117,6 +117,147 @@
                     <img src="{% static 'image/aboutus.png' %}">
                 </div>
 
+
+                <!-- ===== DASHBOARD SECTION (logged in users) ===== -->
+                {% if user.is_authenticated %}
+                <div class="dashboard-section" id="dashboard">
+
+                    <div class="dash-header">
+                        <span class="badge">My Dashboard</span>
+                        <h1>Welcome back,<br>{{ user.username }}</h1>
+                        <p class="dash-subtext">Here is a quick overview of your vehicles and upcoming maintenance.</p>
+                    </div>
+
+                    <!-- ALERT BANNER -->
+                    {% if red_count %}
+                    <div class="dash-alert-banner urgent">
+                        <span>🚨</span>
+                        <span><strong>{{ red_count }} overdue service{{ red_count|pluralize }}</strong> across your vehicles — action needed.</span>
+                        <a href="{% url 'dashboard:vehicle' %}">View →</a>
+                    </div>
+                    {% elif alert_count %}
+                    <div class="dash-alert-banner warning">
+                        <span>⚠️</span>
+                        <span><strong>{{ alert_count }} service{{ alert_count|pluralize }} due soon</strong> across your vehicles.</span>
+                        <a href="{% url 'dashboard:vehicle' %}">View →</a>
+                    </div>
+                    {% endif %}
+
+                    <!-- VEHICLE SUMMARY CARDS -->
+                    {% if cars %}
+                    <div class="dash-vehicles-grid">
+                        {% for car in cars %}
+                        <div class="dash-car-card">
+                            <div class="dcc-top">
+                                <div class="dcc-dot {{ car.dot_class }}">{{ car.dot_label }}</div>
+                                <div class="dcc-info">
+                                    <div class="dcc-name">{{ car.nickname }}</div>
+                                    <div class="dcc-model">{{ car.year }} · Proton {{ car.model }}</div>
+                                </div>
+                            </div>
+                            <div class="dcc-stats">
+                                <div class="dcc-stat">
+                                    <div class="dcs-label">Mileage</div>
+                                    <div class="dcs-val">{{ car.mileage|floatformat:0 }} km</div>
+                                </div>
+                                <div class="dcc-stat">
+                                    <div class="dcs-label">Battery</div>
+                                    <div class="dcs-val" style="color:{% if car.battery_percent >= 70 %}#1D9E75{% elif car.battery_percent >= 40 %}#EF9F27{% else %}#E24B4A{% endif %}">
+                                        {{ car.battery_percent }}%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dcc-actions">
+                                <a href="{% url 'dashboard:maintenance' car.id %}" class="dcc-btn">Maintenance</a>
+                                <a href="{% url 'dashboard:upgrade' %}?car={{ car.id }}" class="dcc-btn-outline">Suggestions</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Add new car shortcut -->
+                        <a href="{% url 'dashboard:vehicle' %}" class="dash-add-card">
+                            <div class="dac-icon">+</div>
+                            <div class="dac-label">Add Vehicle</div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="dash-empty">
+                        <div style="font-size:48px;margin-bottom:12px;">🚗</div>
+                        <h3>No vehicles yet</h3>
+                        <p>Add your Proton e.MAS to start tracking maintenance and get personalised tips.</p>
+                        <a href="{% url 'dashboard:vehicle' %}" class="dcc-btn" style="display:inline-block;margin-top:12px;">Add Vehicle →</a>
+                    </div>
+                    {% endif %}
+
+                    <!-- RECENT ACTIVITY -->
+                    {% if recent_logs %}
+                    <div class="dash-recent">
+                        <div class="dash-recent-title">Recent Activity</div>
+                        <div class="dash-recent-list">
+                            {% for log in recent_logs %}
+                            <div class="recent-item">
+                                <div class="ri-icon">🔧</div>
+                                <div class="ri-body">
+                                    <div class="ri-title">{{ log.vehicle.nickname }} — {{ log.component|title }}</div>
+                                    <div class="ri-meta">{{ log.service_date|date:"d M Y" }} · {{ log.odometer|floatformat:0 }} km{% if log.cost %} · RM {{ log.cost }}{% endif %}</div>
+                                </div>
+                                <a href="{% url 'dashboard:service_history' log.vehicle.id %}" class="ri-link">View →</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <style>
+                    .dashboard-section { max-width:1100px; width:90%; margin:80px auto 0; padding:20px; }
+                    .dash-header { text-align:center; margin-bottom:36px; }
+                    .dash-header h1 { font-size:48px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; }
+                    .dash-subtext { font-size:15px; color:#666; max-width:480px; margin:0 auto; line-height:1.7; }
+                    .dash-alert-banner { display:flex; align-items:center; gap:12px; padding:14px 20px; border-radius:12px; margin-bottom:28px; font-size:14px; flex-wrap:wrap; }
+                    .dash-alert-banner a { margin-left:auto; font-weight:700; text-decoration:none; color:inherit; border-bottom:2px solid currentColor; }
+                    .dash-alert-banner.urgent  { background:#FCEBEB; color:#A32D2D; }
+                    .dash-alert-banner.warning { background:#FAEEDA; color:#633806; }
+                    .dash-vehicles-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px; margin-bottom:48px; }
+                    .dash-car-card { background:#fff; border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+                    .dcc-top { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+                    .dcc-dot { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0; }
+                    .dot-5    { background:#1D9E75; }
+                    .dot-7    { background:#378ADD; }
+                    .dot-phev { background:#9B59B6; }
+                    .dcc-name  { font-size:15px; font-weight:700; color:#1a1a1a; }
+                    .dcc-model { font-size:12px; color:#888; margin-top:2px; }
+                    .dcc-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+                    .dcc-stat { background:#f8f8f8; border-radius:8px; padding:10px 12px; }
+                    .dcs-label { font-size:11px; color:#888; margin-bottom:3px; }
+                    .dcs-val   { font-size:16px; font-weight:700; color:#1a1a1a; }
+                    .dcc-actions { display:flex; gap:8px; }
+                    .dcc-btn { font-size:12px; font-weight:700; padding:7px 14px; background:rgb(224,224,59); color:#000; border-radius:6px; text-decoration:none; transition:.2s; }
+                    .dcc-btn:hover { background:#1a1a1a; color:#fff; }
+                    .dcc-btn-outline { font-size:12px; font-weight:700; padding:7px 14px; background:transparent; color:#333; border:1.5px solid #ddd; border-radius:6px; text-decoration:none; transition:.2s; }
+                    .dcc-btn-outline:hover { border-color:#1a1a1a; background:#1a1a1a; color:#fff; }
+                    .dash-add-card { background:#f9f9f9; border-radius:16px; border:2px dashed #ddd; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px; text-decoration:none; transition:.2s; }
+                    .dash-add-card:hover { border-color:#1a1a1a; background:#fff; }
+                    .dac-icon  { font-size:32px; color:#ccc; margin-bottom:8px; }
+                    .dac-label { font-size:13px; font-weight:600; color:#aaa; }
+                    .dash-add-card:hover .dac-icon, .dash-add-card:hover .dac-label { color:#1a1a1a; }
+                    .dash-empty { text-align:center; padding:50px 20px; background:#fff; border-radius:16px; margin-bottom:48px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+                    .dash-empty h3 { font-size:20px; font-weight:700; margin-bottom:8px; }
+                    .dash-empty p { font-size:14px; color:#888; }
+                    .dash-recent { margin-bottom:20px; }
+                    .dash-recent-title { font-size:18px; font-weight:700; color:#1a1a1a; margin-bottom:14px; }
+                    .dash-recent-list { display:flex; flex-direction:column; gap:8px; }
+                    .recent-item { background:#fff; border-radius:12px; padding:14px 18px; box-shadow:0 2px 8px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px; }
+                    .ri-icon { font-size:22px; flex-shrink:0; }
+                    .ri-body { flex:1; }
+                    .ri-title { font-size:14px; font-weight:600; color:#1a1a1a; }
+                    .ri-meta  { font-size:12px; color:#888; margin-top:2px; }
+                    .ri-link  { font-size:12px; font-weight:700; color:#1a1a1a; text-decoration:none; border-bottom:2px solid rgb(224,224,59); padding-bottom:1px; white-space:nowrap; }
+                    .ri-link:hover { color:rgb(180,180,0); }
+                </style>
+                {% endif %}
+
                 <div class="third-container">
 
                     <div class="third-header">
