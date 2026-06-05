@@ -1,4 +1,4 @@
-AutoCareX Email Verification Setup
+sAutoCareX Email Verification Setup
 
 Email verification is still ON.
 
