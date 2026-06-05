@@ -14,6 +14,7 @@
 
         <input type="checkbox" id="modal-toggle" hidden>
         <input type="checkbox" id="delete-toggle" hidden>
+        <input type="checkbox" id="switch-toggle" hidden>
         
         <nav class="floating-nav">
             <div class="logo-area">
@@ -45,6 +46,7 @@
                     <a class="nav-tab active">Profile</a>
                     <label for="modal-toggle" class="nav-tab" id="openChangeModal">Change Password</label>
                     <label for="delete-toggle" class="nav-tab" >Delete Account</label>
+                    <label for="switch-toggle" class="nav-tab" >Switch Account</label>
                 </nav>
 
             </div>
@@ -53,8 +55,38 @@
 
                 <aside class="sidebar">
 
-                    <div class="photo-container">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="User Avatar" class="photo">
+                    <label class="photo-container" for="photo-toggle">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="User Avatar" class="photo" id="profile-pic">
+                        <div class="image-content">
+                            <p>Change Picture</p>
+                        </div>
+                    </label>
+
+                    <input type="checkbox" id="photo-toggle">
+
+                    <div class="photo-overlay">
+
+                        <div class="photo-box">
+                            <label for="photo-toggle" class="close-x-btn">&times;</label>
+                            
+                            <div class="upload-container">
+                                <input type="file" id="file-upload" class="file-input" accept="image/png, image/jpeg, image/jpg" />
+                                
+                                <label for="file-upload" class="upload-box">
+                                    <div class="icon-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    </div>
+                                    
+                                    <span class="upload-btn">Upload An Image</span>
+                                    <p class="upload-text">Supports PNG, JPEG, and JPG</p>
+                                </label>
+                            </div>
+                        </div>
+                            
                     </div>
 
                     <h2 class="user-name">Blablabla</h2>
@@ -174,6 +206,33 @@
                 
         </div>
 
+        <div class="switch-overlay">
+
+            <div class="switch-box">
+                <label for="switch-toggle" class="close-x-btn">&times;</label>
+                
+                <div class="switch-header">
+                    <div class="icon-badge-switch">🔀</div>
+                    <div class="modal-title">
+                        <h3>Switch Account</h3>
+                        <p>You are about to switch to another account</p>
+                    </div>
+                </div>
+
+                <div class="delete-hint-text">
+                    Are you sure you want to switch accounts? Your current session will be logged out, and you will need to sign in again to access another account in Proton Emas.
+                </div>
+
+                <div class="switch-actions">
+                    <label for="switch-toggle" class="btn-cancel">Cancel</label>
+                    
+                    <button type="button" class="btn-switch-submit">Switch Account</button>
+                </div>
+            </div>
+                
+        </div>
+
+
         <script>
             document.querySelectorAll(".form-group").forEach(group => {
                 const field = group.querySelector("input, textarea");
@@ -218,6 +277,14 @@
                     }
                 });
             });
+
+            let profilePic = document.getElementById("profile-pic")
+            let fileUpload = document.getElementById("file-upload")
+
+            fileUpload.onchange = function (){
+                profilePic.src = URL.createObjectURL(fileUpload.files[0])
+            }
+
         </script>
 
     </body>
