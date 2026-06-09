@@ -12,3 +12,7 @@ urlpatterns = [
     path("reset-password/<uidb64>/<token>/", views.reset_password_view, name="reset_password"),
     path("logout/",                   views.logout_view,      name="logout"),
 ]
+
+urlpatterns = [
+    path('location/', views.location_view, name='location'),
+]
