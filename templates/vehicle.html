@@ -360,6 +360,52 @@
 
                             <!-- CARD 3 -->
 
+                            <input type="checkbox" id="eh3Toggle" hidden>
+
+                            <label for="eh3Toggle" class="engine-hotspot eh-3"></label>
+
+                            <div class="engine-card card-3">
+
+                                <label for="eh3Toggle" class="close-btn">✕</label>
+
+                                <div class="progress-top">
+
+                                    <img src="{{ url_for('static', filename='image/battery.avif') }}">
+
+                                    <div class="status-circle">
+                                        <span>88%</span>
+                                    </div>
+
+                                </div>
+
+                                <p>The battery is in good condition 88%.</p>
+
+                            </div>
+
+                            <!-- CARD 3 -->
+
+                            <input type="checkbox" id="eh4Toggle" hidden>
+
+                            <label for="eh4Toggle" class="engine-hotspot eh-4"></label>
+
+                            <div class="engine-card card-4">
+
+                                <label for="eh4Toggle" class="close-btn">✕</label>
+
+                                <div class="progress-top">
+
+                                    <img src="{{ url_for('static', filename='image/gear.jpg') }}">
+
+                                    <div class="status-circle">
+                                        <span>88%</span>
+                                    </div>
+
+                                </div>
+
+                                <p>The gear is in good condition 88%.</p>
+
+                            </div>
+
 
                         </div>
 
@@ -460,24 +506,7 @@
                                 <div class="mileage-form-mode">
 
                                     <div class="dropdown">
-
-                                        <div class="dropdown-input" onclick="toggleDropdown('date-list',this)">
-                                            <span id="selected-Date">Select Date</span>
-                                            <span>⌵</span>
-                                        </div>
-
-                                        <div class="dropdown-list" id="date-list">
-                                            <div class="dropdown-item" onclick="selectItem('12.5.2025','selected-Date','currentdate','date-list')">
-                                                12.5.2025
-                                            </div>
-                                            <div class="dropdown-item" onclick="selectItem('13.5.2025','selected-Date','currentdate','date-list')">
-                                                13.5.2025
-                                            </div>
-                                            <div class="dropdown-item" onclick="selectItem('14.5.2025','selected-Date','currentdate','date-list')">
-                                                14.5.2025
-                                            </div>
-                                        </div>
-
+                                            <input type="date" name="date-list" id="date-list" value="" />
                                     </div>
 
                                     <input type="hidden" name="date" id="currentdate">

@@ -1062,25 +1062,6 @@ body {
   animation: pulse 2s infinite;
 }
 
-.eh-1 {
-  top: 45%;
-  left: 30%;
-}
-
-.eh-2 {
-  top: 40%;
-  left: 62%;
-}
-
-.eh-1::before{
-  content:"Coolant";
-}
-
-.eh-2::before{
-  content:"Brake Fluid";
-}
-
-
 .engine-hotspot::before{
   position:absolute;
   bottom:28px;
@@ -1165,6 +1146,42 @@ body {
   pointer-events: none;
 }
 
+.eh-1 {
+  top: 45%;
+  left: 30%;
+}
+
+.eh-2 {
+  top: 40%;
+  left: 62%;
+}
+
+.eh-3 {
+  top: 40%;
+  left: 45%;
+}
+
+.eh-4 {
+  top: 50%;
+  right: 28%;
+}
+
+.eh-1::before{
+  content:"Coolant";
+}
+
+.eh-2::before{
+  content:"Brake Fluid";
+}
+
+.eh-3::before{
+  content:"Battery";
+}
+
+.eh-4::before{
+  content:"Gear";
+}
+
 /* EH1 */
 #eh1Toggle:checked ~ .card-1 {
   opacity: 1;
@@ -1182,8 +1199,32 @@ body {
   opacity: 1;
 
   transform:
+    translateX(45%)
+    translateY(-80%)
+    scale(1);
+
+  pointer-events: all;
+}
+
+/* EH3 */
+#eh3Toggle:checked ~ .card-3 {
+  opacity: 1;
+
+  transform:
     translateX(0%)
     translateY(-80%)
+    scale(1);
+
+  pointer-events: all;
+}
+
+/* EH4 */
+#eh4Toggle:checked ~ .card-4 {
+  opacity: 1;
+
+  transform:
+    translateX(50%)
+    translateY(70%)
     scale(1);
 
   pointer-events: all;
