@@ -1,2 +1,7 @@
 django
 python-dateutil
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
+python-dotenv

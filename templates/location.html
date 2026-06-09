@@ -3,429 +3,418 @@
 <html lang="en">
 
     <head>
-        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'image/autocarexlogoblack.png' %}"> 
-        <title>AutoCareX -  Car Workshop</title>
+        <link rel="icon" href="{{ url_for('static', filename='image/autocarexlogoblack.png') }}">
+        <title>AutoCareX - Manage Car</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
-        <link rel="stylesheet" href="{% static 'css/trans.css' %}">
-
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/location_style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/trans.css') }}?v=1">
     </head>
 
     <body>
 
-        <div class="page-overlay"></div>
-
-        <div class="page-content">
-
-            <nav class="floating-nav">
-                <div class="logo-area">
-                    <img src="{% static 'image/autocarexlogowhhite.png' %}" alt="Logo" class="nav-logo-img">
-                </div>
-
-                <ul class="nav-links">
-                    <li><a href="{% url 'dashboard:index' %}">Home</a></li>
-                    <li><a href="{% url 'dashboard:vehicle' %}" >Manage Car</a></li>
-                    <li><a href="{% url 'dashboard:location' %}" class="active">Car Workhop</a></li>
-                    <li><a href="{% url 'dashboard:upgrade' %}" >Suggestion</a></li>
-                    <a href="{% url 'dashboard:profile' %}">Profile</a>
-                </ul>
-
-                <div class="nav-cta">
-                    <a href="{% url 'dashboard:index' %}" class="btn-contact">Contact Us</a>
-                </div>
-            </nav>
-
-                <nav class="first-container">
-
-                    <div class = "slide active" style="background-image: url({% static 'image/protonemas1.jpg' %})">
-                        
-                        <div class="slide-content">
-                            <h1>Start Your Journey<br>With Emas Today</h1>
-                            <a href="#about" class="btn-learn-more">Explore More Things</a>
-                        </div>
-
-                    </div>
-
-                    <div class="slide" style="background-image: url({% static 'image/home_emas1.jpg' %})">
-
-                        <div class="slide-content">
-                            <h1>Latest Model EV<br>Wait You</h1>
-                            <a href="#" class="btn-learn-more">Learn More </a>
-                        </div>
-
-                    </div>
-
-                    <div class="next-trigger">
-                        <div class="arrow-icon">></div>
-                    </div>
-
-                    <div class="indicators">
-                        <div class="dot active"></div>
-                        <div class="dot"></div>
-                    </div>
-
-                </nav>
-
-
-                <!-- ===== WORKSHOP LOCATOR ===== -->
-                <div class="workshop-section" id="workshops">
-
-                    <div class="workshop-header">
-                        <span class="badge">Find Us</span>
-                        <h1>Proton e.MAS Authorised<br>Service Centres</h1>
-                        <p class="workshop-subtext">Locate the nearest authorised Proton EV workshop for your e.MAS vehicle. Click any marker or listing for directions.</p>
-                    </div>
-
-                    <div class="workshop-layout">
-
-                        <!-- MAP -->
-                        <div id="workshopMap"></div>
-
-                        <!-- LISTING -->
-                        <div class="workshop-list">
-
-                            <div class="ws-search-box">
-                                <input type="text" id="wsSearch" placeholder="Search by name or city..." oninput="filterWorkshops(this.value)">
-                            </div>
-
-                            <div id="wsList">
-                                <!-- populated by JS -->
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <style>
-                    .workshop-section {
-                        max-width: 1100px;
-                        width: 90%;
-                        margin: 80px auto 0;
-                        padding: 20px;
-                    }
-                    .workshop-header {
-                        text-align: center;
-                        margin-bottom: 40px;
-                    }
-                    .workshop-header h1 {
-                        font-size: 48px;
-                        font-weight: 700;
-                        letter-spacing: -0.5px;
-                        margin-bottom: 12px;
-                    }
-                    .workshop-subtext {
-                        font-size: 15px;
-                        color: #666;
-                        max-width: 560px;
-                        margin: 0 auto;
-                        line-height: 1.7;
-                    }
-                    .workshop-layout {
-                        display: grid;
-                        grid-template-columns: 1fr 380px;
-                        gap: 24px;
-                        align-items: flex-start;
-                    }
-                    @media (max-width: 860px) {
-                        .workshop-layout { grid-template-columns: 1fr; }
-                    }
-                    #workshopMap {
-                        height: 520px;
-                        border-radius: 16px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 20px rgba(0,0,0,0.10);
-                        z-index: 1;
-                    }
-                    .workshop-list {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 12px;
-                        max-height: 520px;
-                        overflow-y: auto;
-                    }
-                    .ws-search-box input {
-                        width: 100%;
-                        padding: 10px 14px;
-                        border: 1.5px solid #ddd;
-                        border-radius: 8px;
-                        font-size: 14px;
-                        outline: none;
-                        font-family: 'Segoe UI', sans-serif;
-                        transition: border-color .2s;
-                    }
-                    .ws-search-box input:focus { border-color: #1a1a1a; }
-                    .ws-card {
-                        background: #fff;
-                        border-radius: 12px;
-                        padding: 16px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-                        cursor: pointer;
-                        border: 1.5px solid transparent;
-                        transition: all .2s;
-                    }
-                    .ws-card:hover, .ws-card.active { border-color: rgb(224,224,59); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
-                    .ws-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
-                    .ws-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-                    .ws-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: #E1F5EE; color: #085041; white-space: nowrap; }
-                    .ws-addr { font-size: 12px; color: #777; line-height: 1.5; margin-bottom: 10px; }
-                    .ws-actions { display: flex; gap: 8px; }
-                    .ws-btn {
-                        font-size: 12px; font-weight: 600; padding: 5px 12px;
-                        border-radius: 6px; border: none; cursor: pointer; transition: .2s; text-decoration: none; display: inline-block;
-                    }
-                    .ws-btn-dir { background: #1a1a1a; color: #fff; }
-                    .ws-btn-dir:hover { background: rgb(224,224,59); color: #000; }
-                    .ws-btn-map { background: #f0f0f0; color: #333; }
-                    .ws-btn-map:hover { background: #ddd; }
-                </style>
-
-                <!-- Leaflet CSS -->
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-
-                <div class="second-container" id="about">
-
-                    <div class="sub-container2-1">
-                            <span class="badge">About Us</span>
-                    </div>
-
-                    <div class="sub-container2-2">
-
-                        <h1>Discover Why AutoCareX is <br> Your Perfect Choice</h1>
-                        <p class="description">
-                            We are dedicated to providing the <span class="highlight">best vehicles</span> and an <span class="highlight">all-in-one EV platform for Proton e.MAS owners</span>.<br>With <span class="highlight">years of experience</span>, our professional team is ready to <span class="highlight">assist you in finding the perfect car</span> and help you <span class="highlight">track vehicle condition, improve performance, and enhance safety</span>—from consultation to ownership.
-                        </p>
-
-                        <div class ="vision-mission-flex">
-
-                            <div class="sub-container2-2-1">
-                                <div class="left-bar">
-                                    <div class="red-line"></div>
-                                </div>
-
-                                <div class="right-content">
-                                    <h3>Mission</h3>
-                                    <p>To be the most trusted EV management platform for Proton e.MAS owners.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="sub-container2-2-2">
-                                <div class="left-bar">
-                                    <div class="red-line"></div>
-                                </div>
-
-                                <div class="right-content">
-                                    <h3>Vision</h3>
-                                    <p>To create a smart and connected EV ownership experience.</p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="image-wrapper">
-                    <img src="{% static 'image/aboutus.png' %}" alt="Silver Sports Car">
-                </div>
-
-                <div class="third-container">
-
-                    <div class="third-header">
-                        <span class="badge2">Our Updates</span>
-                        <h1>Latest News & Car Insights</h1>
-                    </div>
-
-                    <div class="news-grid">
-                        <nav class="news-card">
-                            <div class="card-image">
-                                <img src="{% static 'image/news1.jpg' %}">
-                            </div>
-                            <div class="card-content">
-                                <h3>Proton eMas 7 PHEV Surges in First Month</h3>
-                                <p class="new-description">
-                                    Proton's plug-in hybrid records 646 units in its first full month, more than doubling the EV variant and highlighting rising demand.
-                                </p>
-                                <a href="https://paultan.org/2026/04/02/proton-emas-7-phev-646-units-in-first-full-month-of-sales-more-than-double-emas-7-march-2026-figures/?utm_source=chatgpt.com"  target="_blank" rel="noopener noreferrer" class="read-more">Read More →</a>
-                            </div>
-                        </nav>
-
-                        <nav class="news-card">
-                            <div class="card-image">
-                                <img src="{% static 'image/news2.jpg' %}">
-                            </div>
-                            <div class="card-content">
-                                <h3>Proton eMas 7 Gets Cheaper Variant for Singapore</h3>
-                                <p class="new-description">
-                                    A new 100 kW version is introduced to qualify for lower COE costs, making the model more accessible in Singapore.
-                                </p>
-                                <a href="https://autobuzz.my/2026/01/12/proton-emas-7-to-get-detuned-100-kw-variant-in-singapore-for-cheaper-cat-a-coe/"  target="_blank" rel="noopener noreferrer" class="read-more">Read More →</a>
-                            </div>
-                        </nav>
-
-                        <nav class="news-card">
-                            <div class="card-image">
-                                <img src="{% static 'image/new3.jpg' %}">
-                            </div>
-                            <div class="card-content">
-                                <h3>Proton eMas 7 Adds Android Auto via OTA</h3>
-                                <p class="new-description">
-                                    An OTA update finally brings Android Auto support, improving connectivity and enhancing the overall infotainment experience.
-                                </p>
-                                <a href="https://autobuzz.my/2025/12/26/proton-emas-7-finally-adds-android-auto-support-via-ota-update/"  target="_blank" rel="noopener noreferrer" class="read-more">Read More →</a>
-                            </div>
-                        </nav>
-
-                        <nav class="news-card">
-                            <div class="card-image">
-                                <img src="{% static 'image/news4.avif' %}">
-                            </div>
-                            <div class="card-content">
-                                <h3>Proton eMas 5 Tested in Real-World Drive</h3>
-                                <p class="new-description">
-                                    Real-world testing showcases its practicality and efficiency, proving it can handle daily use with surprising versatility.
-                                </p>
-                                <a href="https://www.zigwheels.my/car-news/first-impressions-proton-emas-5-real-world-usage-genting-run-and-13-durians-in-the-frunk" class="read-more"  target="_blank" rel="noopener noreferrer">Read More →</a>
-                            </div>
-                        </nav>
-                    </div>
-
-                </div>
-
-                <footer class="footer-container">
-
-                        <div class="footer-top">
-
-                            <div class="logo">
-                            <img src="{% static 'image/autocarexlogowhhite.png' %}"> 
-                            </div>
-
-                            <nav class="footer-nav">
-                            <a href="{% url 'dashboard:index' %}">Home</a>
-                            <a href="{% url 'dashboard:vehicle' %}">Own Vehicle</a>
-                            <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-                            <a href="{% url 'dashboard:upgrade' %}">Upgrade</a>
-                            <a href="{% url 'dashboard:profile' %}">Profile</a>
-                            </nav>
-
-                        </div>
-
-                        <hr class="footer-divider">
-
-                        <div class="footer-bottom">
-
-                            <div class="footer-email">
-                            Email Example@Gmail.com
-                            </div>
-                            
-                            <div class="footer-socials">
-                            <a href="#"><i class="fab fa-facebook"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-linkedin"></i></a>
-                            <a href="#"><i class="fab fa-x-twitter"></i></a>
-                            <a href="#"><i class="fab fa-youtube"></i></a>
-                            </div>
-
-                            <div class="footer-copyright">
-                            Copyright © 2026 Brand | All Rights Reserved
-                            </div>
-                        </div>
-                </footer>
+      <nav class="floating-nav">
+        <div class="logo-area">
+          <img src="{{ url_for('static', filename='image/autocarexlogowhhite.png') }}" class="nav-logo-img">
         </div>
 
-        <script src="{% static 'js/script.js' %}"></script>
+        <ul class="nav-links"> 
+          <a href="{{ url_for('home')}}">Home</a >
+          <a href="{{ url_for('vehicle') }}">Manage Car</a >
+          <a href="{{ url_for('location') }}" class="active">Car Workshop</a >
+          <a href="{{ url_for('upgrade') }}">Suggestion</a >
+          <li><a href="#">Profile</a ></li>
+        </ul>
 
-        <!-- Leaflet JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-        <script>
-        const workshops = [
-            { name: "Proton Edar Shah Alam", address: "Jalan Pelabuhan Utama, Shah Alam, Selangor", lat: 3.0738, lng: 101.5183, phone: "03-5510 1111" },
-            { name: "Proton Edar Petaling Jaya", address: "Jalan Othman, Petaling Jaya, Selangor", lat: 3.1069, lng: 101.6067, phone: "03-7956 2222" },
-            { name: "Proton Edar KL City", address: "Jalan Ampang, Kuala Lumpur", lat: 3.1600, lng: 101.7130, phone: "03-2161 3333" },
-            { name: "Proton Edar Subang Jaya", address: "Persiaran Kewajipan, Subang Jaya, Selangor", lat: 3.0470, lng: 101.5836, phone: "03-5636 4444" },
-            { name: "Proton Edar Cheras", address: "Jalan Cheras, Kuala Lumpur", lat: 3.0987, lng: 101.7350, phone: "03-9130 5555" },
-            { name: "Proton Edar Kepong", address: "Jalan Kepong, Kuala Lumpur", lat: 3.2100, lng: 101.6360, phone: "03-6250 6666" },
-            { name: "Proton Edar Puchong", address: "Jalan Kenari, Puchong, Selangor", lat: 3.0270, lng: 101.6230, phone: "03-8070 7777" },
-            { name: "Proton Edar Klang", address: "Jalan Meru, Klang, Selangor", lat: 3.0449, lng: 101.4455, phone: "03-3342 8888" },
-            { name: "Proton Edar Johor Bahru", address: "Jalan Tebrau, Johor Bahru, Johor", lat: 1.5000, lng: 103.7667, phone: "07-333 9999" },
-            { name: "Proton Edar Penang", address: "Jalan Macalister, Georgetown, Penang", lat: 5.4200, lng: 100.3330, phone: "04-226 1010" },
-            { name: "Proton Edar Ipoh", address: "Jalan Sultan Idris Shah, Ipoh, Perak", lat: 4.5975, lng: 101.0901, phone: "05-241 1111" },
-            { name: "Proton Edar Kuching", address: "Jalan Tun Jugah, Kuching, Sarawak", lat: 1.5500, lng: 110.3500, phone: "082-456 1212" },
-            { name: "Proton Edar Kota Kinabalu", address: "Jalan Lintas, Kota Kinabalu, Sabah", lat: 5.9800, lng: 116.0750, phone: "088-211 1313" },
-            { name: "Proton Edar Seremban", address: "Jalan Sungai Ujong, Seremban, N. Sembilan", lat: 2.7260, lng: 101.9380, phone: "06-762 1414" },
-            { name: "Proton Edar Melaka", address: "Jalan Bendahara, Melaka", lat: 2.1960, lng: 102.2400, phone: "06-282 1515" },
-        ];
+        <div class="nav-cta">
+          <a href="#" class="btn-contact">Contact Us</a >
+        </div>
+      </nav>
 
-        // Map init
-        const map = L.map('workshopMap').setView([3.8, 108.0], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
 
-        const yellowIcon = L.divIcon({
-            className: '',
-            html: '<div style="width:14px;height:14px;background:rgb(224,224,59);border-radius:50%;border:2.5px solid #1a1a1a;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
-            iconSize: [14, 14],
-            iconAnchor: [7, 7],
-        });
+      <div class="main_container">
+        <div class="sidebar">
+          <div class="header">
+            <h3>Proton e.MAS</h3>
+            <p>( Cyberjaya & Surroundings )</p>
+          </div>
+          <div class="dropdown_container">
+            <label for="location_filter" class="dropdown_label">Filter Type:</label>
+            <select id="location_filter" class="style_dropdown" onchange="filterLocations()">
+              <option value="all">All</option>
+              <option value="workshop">Workshop</option>
+              <option value="outlet">Outlet</option>
+            </select>
+         </div>
 
-        let markers = [];
-        let activeCard = null;
+          <div class="workshop_container" id="Workshop_details">
+            <div class="workshop_item" data_type="workshop">
 
-        function renderList(list) {
-            const container = document.getElementById('wsList');
-            container.innerHTML = '';
-            list.forEach((ws, i) => {
-                const card = document.createElement('div');
-                card.className = 'ws-card';
-                card.id = 'ws-card-' + i;
-                card.innerHTML = `
-                    <div class="ws-card-top">
-                        <div class="ws-name">${ws.name}</div>
-                        <span class="ws-badge">Authorised</span>
-                    </div>
-                    <div class="ws-addr">${ws.address}</div>
-                    <div class="ws-actions">
-                        <a class="ws-btn ws-btn-dir" href="https://www.google.com/maps/dir/?api=1&destination=${ws.lat},${ws.lng}" target="_blank" rel="noopener">Directions</a>
-                        <button class="ws-btn ws-btn-map" onclick="focusWorkshop(${i})">View on Map</button>
-                    </div>
-                `;
-                card.addEventListener('click', () => focusWorkshop(i));
-                container.appendChild(card);
-            });
-        }
+              <div class="item_header">
+                <h5>Jewel Sonic (IOI City Mall)</h5>
+              </div>
 
-        function focusWorkshop(idx) {
-            const ws = workshops[idx];
-            map.flyTo([ws.lat, ws.lng], 14, { duration: 1 });
-            markers[idx].openPopup();
-            if (activeCard) activeCard.classList.remove('active');
-            const card = document.getElementById('ws-card-' + idx);
-            if (card) { card.classList.add('active'); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); activeCard = card; }
-        }
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC-FAST-CHARGER</span>
+              </div>
 
-        function filterWorkshops(query) {
-            const q = query.toLowerCase();
-            const filtered = workshops.filter(ws =>
-                ws.name.toLowerCase().includes(q) || ws.address.toLowerCase().includes(q)
-            );
-            renderList(filtered);
-        }
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/w6Bj5dXd9EAyGUWi9" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop1')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div> 
+            </div>    
 
-        // Add markers
-        workshops.forEach((ws, i) => {
-            const marker = L.marker([ws.lat, ws.lng], { icon: yellowIcon })
-                .addTo(map)
-                .bindPopup(`<b>${ws.name}</b><br>${ws.address}<br><small>${ws.phone}</small>`);
-            marker.on('click', () => focusWorkshop(i));
-            markers.push(marker);
-        });
+            <div class="workshop_item" data_type="workshop">
 
-        renderList(workshops);
+              <div class="item_header">
+                <h5>Seri Kembangan (AJG Mobility)</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC CHARGER</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/o9CKiiVYNo8nhLuh6" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a href="javascript:void(0);" class="two_button" onclick="goToShop(3.0236662654551063, 101.667, 'modal_shop2')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>
+            </div>
+
+            <div class="workshop_item" data_type="workshop">
+
+              <div class="item_header">
+                <h5>Petaling Jaya (Regal Motors)</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC-FAST-CHARGER</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/hQNC8cDjzHMxDzup8" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(3.115525116080513,101.631, 'modal_shop3')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>
+            </div>
+
+            <div class="workshop_item" data_type="workshop">
+
+              <div class="item_header">
+                <h5>Cheras (Able Mobility Sdn Bhd)</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC-FAST-CHARGER</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/3Uq69RdsjhnhG7gS6" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop4')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>  
+            </div>
+
+            <div class="workshop_item" data_type="workshop">
+
+              <div class="item_header">
+                <h5>KL Segambut (Cahaya Technology)</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC CHARGER</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/XZHyEA7iMqgqWhaJA" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop5')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>  
+            </div>
+
+            <div class="workshop_item" data_type="workshop">
+
+              <div class="item_header">
+                <h5>Kajang, Cheras (ProAuto Drive EV)</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC CHARGER</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/kasf4HqyM6n12mncA" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop6')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>  
+            </div>
+
+            <div class="workshop_item" data_type="workshop">
+
+              <div class="item_header">
+                <h5>Puchong (AJG Mobility)</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">3S CENTER & DC CHARGER</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/GoTVaWo4C9PxiMoEA" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop7')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>  
+            </div>
+
+            <div class="workshop_item" data_type="outlet">
+
+              <div class="item_header">
+                <h5>Quayside Mall-PKT AutoPro</h5>
+              </div>
+
+              <div class="status_tag">
+                <span class="tag_green">Outlet</span>
+              </div>
+
+              <div class="button_group">
+                <a href="https://maps.app.goo.gl/pkwbxBvoeinY5u7D8" target="_blank" class="two_button">
+                  <i class="icon_nav"></i> Navigate Now
+                </a>
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop8')">
+                  <i class="icon_call"></i> Outlet
+                </a>
+              </div>                
+            </div>
+          </div>
+
+        </div>
+
+        
+
+        <div id="map"></div>
+
+        <div id="modal_shop1" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header1">
+              <h3 class="header_word">Jewel Sonic (IOI City Mall)</h3>
+              <button onclick="closeModal ('modal_shop1')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/ioicitymall_shop.png" class="ioi_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">Lot 2AT-8, Ground Floor, City, IOI City Mall, Lbh IRC, Ioi Resort, 62502 City, Putrajaya</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">016-8622887</p>
+              <a href="https://maps.app.goo.gl/w6Bj5dXd9EAyGUWi9" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="modal_shop2" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header2">
+              <h3 class="header_word">Seri Kembangan<br>(AJG Mobility)</h3>
+              <button onclick="closeModal ('modal_shop2')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/serikembangan.png" class="kembangan_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">Lot 58674, Persiaran Puncak Jalil, Taman Puncak Jalil, Puj 6, 43300 Seri Kembangan, Selangor</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">019-3028738</p>
+              <a href="https://maps.app.goo.gl/o9CKiiVYNo8nhLuh6" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="modal_shop3" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header3">
+              <h3 class="header_word">Petaling Jaya<br>(Regal Motors)</h3>
+              <button onclick="closeModal ('modal_shop3')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/petaling_image.png" class="petaling_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">Jalan 13/4, Seksyen 13, 46200 Petaling Jaya, Selangor</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">012-8564022</p>
+              <a href="https://maps.app.goo.gl/hQNC8cDjzHMxDzup8" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <script>
+          var map = L.map('map').setView([3.05, 101.68], 12); /* Let cyberjaya as center */
+
+          L.tileLayer ('https://api.maptiler.com/maps/streets-v4/256/{z}/{x}/{y}.png?key=mUlTWN3ORrePiGSX39in' ,{
+            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+          }) .addTo (map);
+
+          var shopsData = [
+            {
+              name: 'Jewel Sonic (IOI City Mall)',
+              lat : 2.9702847456754187,
+              lng : 101.7175433306841,
+              lat1: 2.9702847456754187,
+              lng1: 101.709,
+              address :'Lot 2AT-8, Ground Floor, City, IOI City Mall, Lbh IRC, Ioi Resort, 62502 City, Putrajaya',
+              phone : '016-8622887',
+              id : 'modal_shop1'
+            },
+            {
+              name: 'Seri Kembangan (AJG Mobility)',
+              lat: 3.0236662654551063, 
+              lng: 101.6753272730131,
+              lat1: 3.0236662654551063,
+              lng1: 101.667,
+              address :'Lot 58674, Persiaran Puncak Jalil, Taman Puncak Jalil, Puj 6, 43300 Seri Kembangan, Selangor',
+              phone : '019-3028738',
+              id : 'modal_shop2'
+            },
+            {
+              name: 'Petaling Jaya (Regal Motors)', 
+              lat: 3.115525116080513,  
+              lng: 101.63907899815139, 
+              lat1: 3.115525116080513,
+              lng1: 101.631,
+              address: 'Jalan 13/4, Seksyen 13, 46200 Petaling Jaya, Selangor', 
+              phone: '012-8564022',
+              id : 'modal_shop3'
+            },
+            {
+              name: 'Cheras (Able Mobility)', 
+              lat: 3.102760344958885,  
+              lng: 101.73474563068413, 
+              address: 'Lot 4523D, Batu ½, Jln Cheras, Taman Sri Bahtera Kuala Lumpur, 56100 Willayah Persekutuan, Wilayah Persekutuan Kuala Lumpur', 
+              phone: '011-61499834',
+              id : 'modal_shop4'
+            },
+            {
+              name: 'KL Segambut (Cahaya Technology)', 
+              lat: 3.186297262411022,  
+              lng: 101.67555267116448, 
+              address: '39, Jalan 2, 57B, Persiaran Segambut Tengah, Segambut, 51200 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur', 
+              phone: '011-25659903',
+              id : 'modal_shop5'
+            },
+            {
+              name: 'Kajang Cheras (ProAuto Drive)', 
+              lat: 3.0346599327321524,  
+              lng: 101.77959135767104, 
+              address: 'Level 1 (e, MAS Showroom, Lot 4165, Jalan Besar, Bandar Sungai Long, 43000 Kajang, Selangor', 
+              phone: '03-87418846',
+              id : 'modal_shop6'
+            },
+            {
+              name: 'Proton e.MAS Puchong (AJG Mobility)', 
+              lat: 3.0459649809239235,  
+              lng: 101.62067954417756, 
+              address: '1, Jalan Kenari 1, Off, Jalan Puchong, Bandar Puchong Jaya, 47100 Puchong, Selangor', 
+              phone: '012-2171880',
+              id : 'modal_shop7'
+            },
+            {
+              name: 'Quayside Mall-PKT AutoPro', 
+              lat: 2.9564453465167593,  
+              lng: 101.55282144232896, 
+              address: 'GF(W) - 05-01, Sales Showroom, Quayside Mall, B1-09 (K17 To K20), Service Center, 25.7, Persiaran Freesia, Gamuda Kemuning, 42500 Telok Panglima Garang, Selangor', 
+              phone: '010-9767068',
+              id : 'modal_shop8'
+            }
+          ]
+
+          shopsData.forEach(function(shop) {
+          var marker = L.marker([shop.lat, shop.lng]).addTo(map);
+
+          marker.bindTooltip(shop.name, {
+          permanent: true,       
+          direction: 'top',      
+          className: 'custom_map_label',
+          offset : [-15, -12],
+          interactive: true
+          });
+
+          marker.on('click', function() {
+          goToShop(shop.lat1, shop.lng1, shop.id);
+          });
+
+          marker.getTooltip().on('click', function() {
+          goToShop(shop.lat1, shop.lng1, shop.id);
+          });
+          
+          });
+
+          function goToShop(lat, lng, modalId) {
+          map.flyTo([lat, lng], 15, { animate: true, duration: 1.5 });
+
+          setTimeout(function() {
+          document.getElementById(modalId).style.display = 'flex';
+          }, 1300); //1200 is 1.2s
+          }
+
+          function closeModal(modalId) {
+          document.getElementById(modalId).style.display = 'none';
+          map.flyTo([3.05, 101.68], 12, { animate: true, duration: 1 })
+          
+          }
+
+          function closeAllModals(event) {
+          if (event.target.classList.contains('workshop_popup')) {
+              event.target.style.display = 'none';
+          }
+          map.flyTo([3.05, 101.68], 12, { animate: true, duration: 1 })
+          }
+
+          function filterLocations() {
+          var selectedValue = document.getElementById('location_filter').value;
+         
+          var items = document.querySelectorAll('.workshop_item');
+          
+          items.forEach(function(item) {
+              var itemType = item.getAttribute('data_type');
+
+              if (selectedValue === 'all' || itemType === selectedValue) {
+                  item.style.display = 'block';  
+              } else {
+                  item.style.display = 'none'; 
+              }
+          });
+      }
+
         </script>
+      
 
     </body>
- 
+
 </html>
