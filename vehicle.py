@@ -38,7 +38,14 @@ def vehicle():
     for car in cars:
         car["image"] = image_map.get(car["model"],"")
 
-    return render_template("vehicle.html", cars=cars,car_count=len(cars))
+    first_car = cars[0] if cars else None
+
+    return render_template(
+        "vehicle.html",
+        cars=cars,
+        car_count=len(cars),
+        first_car=first_car
+    )
 
 @app.route("/add_car",methods=["POST"])
 def add_car():
