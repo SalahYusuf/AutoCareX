@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电动车管理中心</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <input type="checkbox" id="add-modal-toggle" class="hidden-checkbox">
+
+    <header class="header">
+        <div class="header-left">
+            <div class="bell-icon">🔔<div class="bell-badge">1</div></div>
+            <span class="icon">⚡</span>
+            <span>电动车管理中心</span>
+        </div>
+        <div class="header-right">
+            <span>5 辆车辆</span>
+            <span class="tag-yellow">1 条提醒</span>
+        </div>
+    </header>
+
+    <div class="main-content">
+        
+        <aside class="panel sidebar-left">
+            <div class="section-title">
+                <div>🚗 我的车辆 <span class="count">5</span></div>
+                <label for="add-modal-toggle" class="add-btn">+ 添加</label>
+            </div>
+            <div class="vehicle-list">
+                <div class="vehicle-item">
+                    <div class="dot red"></div>
+                    <div class="v-info">
+                        <div class="v-name">特斯拉 Model 3</div>
+                        <div class="v-status"><span class="perc">80%</span> · 正常</div>
+                    </div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="dot blue"></div>
+                    <div class="v-info">
+                        <div class="v-name">比亚迪 海豹</div>
+                        <div class="v-status low"><span class="perc">15%</span> · 低电量</div>
+                    </div>
+                </div>
+                <div class="vehicle-item active">
+                    <div class="dot purple"></div>
+                    <div class="v-info">
+                        <div class="v-name">小鹏 P7</div>
+                        <div class="v-status"><span class="perc">88%</span> · 充电中</div>
+                    </div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="dot green"></div>
+                    <div class="v-info">
+                        <div class="v-name">蔚来 ET5</div>
+                        <div class="v-status"><span class="perc">55%</span> · 正常</div>
+                    </div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="dot orange"></div>
+                    <div class="v-info">
+                        <div class="v-name">理想 L9</div>
+                        <div class="v-status"><span class="perc">93%</span> · 正常</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="panel center-panel">
+            <div class="center-header">
+                <div>
+                    <div class="car-title-brand">XPENG</div>
+                    <div class="car-title-model">小鹏 P7</div>
+                </div>
+                <div class="status-tag">充电中</div>
+            </div>
+
+            <div class="car-display">
+                <div class="css-car">
+                    <div class="car-top"><div class="charging-icon">⚡</div></div>
+                    <div class="car-bottom">
+                        <div class="car-light-front"></div>
+                        <div class="car-light-back"></div>
+                    </div>
+                    <div class="wheel left"></div>
+                    <div class="wheel right"></div>
+                    <div class="car-shadow"></div>
+                </div>
+            </div>
+
+            <div class="center-footer">
+                <div class="battery-bar-container">
+                    <div class="battery-header">
+                        <span>⚡ 电量</span><span class="green">88%</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 88%;"></div></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-value">510</div><div class="stat-label">预估续航 km</div></div>
+                    <div class="stat-item"><div class="stat-value">45,200</div><div class="stat-label">总里程 km</div></div>
+                    <div class="stat-item"><div class="stat-value">580</div><div class="stat-label">满电续航 km</div></div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="panel sidebar-right">
+            <div class="section-title"><div>🔄 快速更新</div></div>
+            <div class="car-selector"><div class="dot-small"></div><span>小鹏 P7</span></div>
+            <div class="form-group">
+                <label>增加行驶里程 (km)</label>
+                <input type="text" class="form-control" placeholder="如：120">
+            </div>
+            <div class="form-group">
+                <label>设置当前电量 (%)</label>
+                <input type="text" class="form-control" placeholder="0 - 100">
+            </div>
+            <div class="form-group">
+                <label>车辆状态</label>
+                <div class="status-btns">
+                    <div class="status-btn active">正常</div>
+                    <div class="status-btn">充电</div>
+                    <div class="status-btn">低电</div>
+                </div>
+            </div>
+            <button class="submit-btn">提交更新</button>
+
+            <div class="mini-progress">
+                <div class="mini-header"><span>⚡ 当前电量</span><span class="val">88%</span></div>
+                <div class="mini-bar-bg"><div class="mini-bar-fill" style="width: 88%;"></div></div>
+            </div>
+            <div class="mini-progress">
+                <div class="mini-header"><span>🔧 保养进度</span><span class="val">52%</span></div>
+                <div class="mini-bar-bg"><div class="mini-bar-fill" style="width: 52%;"></div></div>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 6px;">已行驶 5,200 / 10,000 km</div>
+            </div>
+            <div class="total-mileage-box">
+                <label>总里程</label>
+                <div class="val">45,200 <span>km</span></div>
+            </div>
+        </aside>
+
+    </div>
+
+    <div class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>添加新车辆</h3>
+                <label for="add-modal-toggle" class="close-icon">✕</label>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>车辆昵称 *</label>
+                    <input type="text" class="form-control" placeholder="如：我的代步车">
+                </div>
+                
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>年份</label>
+                        <select class="form-control custom-select">
+                            <option>2024</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                            <option>2021</option>
+                            <option>2020</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>车型</label>
+                        <select class="form-control custom-select">
+                            <option>emas5</option>
+                            <option>emas7</option>
+                            <option>emasphev</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>已行驶里程 (km)</label>
+                    <input type="number" class="form-control" placeholder="如：15000">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <label for="add-modal-toggle" class="btn btn-cancel">取消</label>
+                <button class="btn btn-save">保存</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

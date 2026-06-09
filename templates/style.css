@@ -1,0 +1,662 @@
+
+:root {
+    --bg-main: #0b0f19;        /* 整体深色背景 */
+    --bg-panel: #111827;       /* 面板背景 */
+    --bg-active: #1e293b;      /* 选中状态背景 */
+    --border-color: #1f2937;   /* 边框颜色 */
+    --text-main: #f3f4f6;      /* 主要文字 */
+    --text-muted: #9ca3af;     /* 次要文字 */
+    
+    --color-red: #ef4444;
+    --color-blue: #3b82f6;
+    --color-purple: #a855f7;
+    --color-green: #10b981;
+    --color-orange: #f59e0b;
+    --color-dark-blue: #2563eb;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Body 白色背景，上下留白，取消居中 */
+body {
+    background-color: #ffffff;
+    padding: 40px 0; /* 上下留出40px的白色空间，左右为0 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 主容器：暗色面板，宽度拉满 */
+.container {
+    width: 100%;
+    height: 850px;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* 顶部导航栏 */
+.header {
+    height: 70px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    background-color: var(--bg-main);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    font-size: 18px;
+}
+.header-left .icon {
+    color: var(--color-blue);
+    font-size: 20px;
+}
+.bell-icon {
+    position: relative;
+    background: #1f2937;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-orange);
+}
+.bell-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--color-orange);
+    color: #000;
+    font-size: 10px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.header-right {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+    align-items: center;
+}
+.tag-yellow {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--color-orange);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+/* 主体内容区域 (三列布局) */
+.main-content {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+    gap: 20px;
+    height: calc(100% - 70px);
+}
+
+/* 公共面板样式 */
+.panel {
+    background-color: var(--bg-panel);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 左侧：我的车辆 */
+.sidebar-left {
+    width: 280px;
+    padding: 20px 15px;
+}
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding: 0 5px;
+}
+.section-title span.count {
+    background: var(--border-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.add-btn {
+    color: var(--color-blue);
+    cursor: pointer;
+    font-size: 13px;
+}
+.vehicle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+.vehicle-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+}
+.vehicle-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+.vehicle-item.active {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+.vehicle-item.active::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    width: 6px;
+    height: 6px;
+    background: var(--color-blue);
+    border-radius: 50%;
+}
+.dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    background: #1f2937;
+}
+.dot::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.dot.red::after { background: var(--color-red); }
+.dot.blue::after { background: var(--color-blue); }
+.dot.purple::after { background: var(--color-purple); }
+.dot.green::after { background: var(--color-green); }
+.dot.orange::after { background: var(--color-orange); }
+
+.v-info { display: flex; flex-direction: column; gap: 4px; }
+.v-name { font-size: 14px; font-weight: 500; }
+.v-status { font-size: 12px; color: var(--text-muted); }
+.v-status .perc { color: var(--color-green); }
+.v-status.low .perc { color: var(--color-red); }
+
+/* 中间：车辆详情与展示 */
+.center-panel {
+    flex: 1;
+    position: relative;
+}
+.center-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.car-title-brand { font-size: 12px; color: var(--text-muted); text-transform: uppercase;}
+.car-title-model { font-size: 24px; font-weight: bold; margin-top: 4px; }
+.status-tag {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--color-blue);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+}
+.status-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--color-blue);
+    border-radius: 50%;
+}
+
+/* 纯 CSS 绘制紫色汽车 */
+.car-display {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.css-car {
+    position: relative;
+    width: 340px;
+    height: 120px;
+    margin-top: -50px;
+}
+.car-top {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    width: 240px;
+    height: 60px;
+    background: #b678ff;
+    border-radius: 80px 80px 0 0;
+}
+.car-bottom {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    height: 50px;
+    background: #a855f7;
+    border-radius: 20px;
+}
+.car-light-front {
+    position: absolute;
+    right: 5px;
+    top: 15px;
+    width: 15px;
+    height: 8px;
+    background: #fef08a;
+    border-radius: 4px;
+}
+.car-light-back {
+    position: absolute;
+    left: 5px;
+    top: 15px;
+    width: 15px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 4px;
+}
+.wheel {
+    position: absolute;
+    bottom: -15px;
+    width: 46px;
+    height: 46px;
+    background: #1f2937;
+    border-radius: 50%;
+    border: 4px solid #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.wheel::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: #374151;
+    border-radius: 50%;
+}
+.wheel.left { left: 40px; }
+.wheel.right { right: 40px; }
+.car-shadow {
+    position: absolute;
+    bottom: -25px;
+    left: 20px;
+    width: 300px;
+    height: 10px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    filter: blur(4px);
+}
+.charging-icon {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    background: var(--color-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+}
+
+/* 中间底部：电量与数据 */
+.center-footer {
+    padding: 0 30px 30px 30px;
+}
+.battery-bar-container { margin-bottom: 30px; }
+.battery-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+.battery-header .green { color: var(--color-green); font-weight: bold;}
+.bar-bg {
+    width: 100%;
+    height: 10px;
+    background: #1f2937;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: var(--color-green);
+    border-radius: 5px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 25px;
+}
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+.stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: var(--border-color);
+}
+.stat-value {
+    font-size: 22px;
+    font-weight: bold;
+}
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* 右侧：快速更新 */
+.sidebar-right {
+    width: 320px;
+    padding: 20px;
+}
+.sidebar-right .section-title { margin-bottom: 25px; }
+
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.form-control {
+    width: 100%;
+    background: #1f2937;
+    border: 1px solid #374151;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+.form-control:focus { border-color: var(--color-blue); }
+
+.car-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1f2937;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+.car-selector .dot-small {
+    width: 10px; height: 10px; background: var(--color-purple); border-radius: 50%;
+}
+
+.status-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.status-btn {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: var(--text-muted);
+    padding: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    transition: 0.2s;
+}
+.status-btn.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--color-blue);
+    border-color: var(--color-blue);
+}
+.submit-btn {
+    width: 100%;
+    background: var(--color-dark-blue);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: 0.2s;
+}
+.submit-btn:hover { background: #1d4ed8; }
+
+/* 右侧迷你进度条 */
+.mini-progress {
+    margin-bottom: 20px;
+}
+.mini-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.mini-header .val { color: var(--color-green); }
+.mini-bar-bg {
+    height: 6px;
+    background: #1f2937;
+    border-radius: 3px;
+}
+.mini-bar-fill {
+    height: 100%;
+    background: var(--color-green);
+    border-radius: 3px;
+}
+
+/* 右下角总里程 */
+.total-mileage-box {
+    background: #1f2937;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.total-mileage-box label {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+}
+.total-mileage-box .val {
+    font-size: 20px;
+    font-weight: bold;
+}
+.total-mileage-box .val span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+/* =========================================
+   弹窗 (Modal) 与 Checkbox Hack 逻辑
+   ========================================= */
+
+/* 1. 隐藏 checkbox */
+.hidden-checkbox {
+    display: none;
+}
+
+/* 2. 弹窗遮罩层初始状态 (隐藏) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px); /* 背景模糊效果 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    /* 隐藏状态 */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* 3. 弹窗本体初始状态 */
+.modal-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 420px;
+    padding: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    
+    /* 配合动画初始位置稍微靠上 */
+    transform: translateY(-20px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 4. Checkbox Hack 触发动画核心逻辑！ */
+/* 当 checkbox 被选中时，找到它后面的 .modal-overlay 并显示 */
+.hidden-checkbox:checked ~ .modal-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 当 checkbox 被选中时，让弹窗本体弹入 */
+.hidden-checkbox:checked ~ .modal-overlay .modal-box {
+    transform: translateY(0) scale(1);
+}
+
+
+/* =========================================
+   弹窗内部样式
+   ========================================= */
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.close-icon {
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-icon:hover {
+    color: var(--color-red);
+}
+
+/* 两列并排表单网格 */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* 自定义下拉菜单箭头 */
+.custom-select {
+    appearance: none; /* 移除浏览器默认样式 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    cursor: pointer;
+}
+
+/* 弹窗底部按钮区 */
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    display: block; /* 覆盖 label 的默认 inline 属性 */
+}
+
+.btn-cancel:hover {
+    background: var(--bg-active);
+}
+
+.btn-save {
+    background: var(--color-blue);
+    color: white;
+}
+
+.btn-save:hover {
+    background: #2563eb; /* 悬停稍微变亮 */
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}

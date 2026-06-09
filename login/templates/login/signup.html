@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sign Up | AutoCareX
+<script>
+function bindToggle(iconId,inputId){
+ const i=document.getElementById(iconId); const p=document.getElementById(inputId);
+ if(!i||!p) return;
+ i.addEventListener('click',()=>{
+  p.type=p.type==='password'?'text':'password';
+  i.classList.toggle('fa-eye'); i.classList.toggle('fa-eye-slash');
+ });
+}
+bindToggle('togglePw','pw');
+bindToggle('togglePw1','password1');
+bindToggle('togglePw2','password2');
+</script>
+
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/signup_style.css' %}">
+
+<div class="login_container">
+  <div class="login_left">
+    <img src="{% static 'image/signup_image.png' %}" class="login_img">
+  </div>
+
+  <div class="login_right">
+    <div class="profile_content">
+      <img src="{% static 'image/autocarexlogowhhite.png' %}" class="logo"><br>
+      <h1>Create your account</h1>
+      <p>Already have an AutoCareX ID? Login <a href="{% url 'login:login' %}">here.</a></p>
+
+      {% if messages %}
+        {% for message in messages %}
+          <p style="color:red;">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <label for="username">Account Name*</label><br>
+        <input type="text" id="username" name="username" placeholder="Enter your account name"><br>
+
+        <label for="pw">Password*</label><br>
+        <div style="position:relative;"><input type="password" id="pw" name="password" placeholder="password"><i class="fa-solid fa-eye" id="togglePw" style="position:absolute;right:15px;top:15px;cursor:pointer;"></i></div><br>
+
+        <label for="email">Email Address*</label><br>
+        <input type="email" id="email" name="email" placeholder="example@mail.com"><br>
+
+        <button type="submit">
+          <span>Create account</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function bindToggle(iconId,inputId){
+ const i=document.getElementById(iconId); const p=document.getElementById(inputId);
+ if(!i||!p) return;
+ i.addEventListener('click',()=>{
+  p.type=p.type==='password'?'text':'password';
+  i.classList.toggle('fa-eye'); i.classList.toggle('fa-eye-slash');
+ });
+}
+bindToggle('togglePw','pw');
+bindToggle('togglePw1','password1');
+bindToggle('togglePw2','password2');
+</script>
+
+{% endblock %}

@@ -1,0 +1,373 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
+        <title>AutoCareX - Home</title>
+
+        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
+        <link rel="stylesheet" href="{% static 'css/trans.css' %}">
+    </head>
+
+    <body>
+
+            <nav class="floating-nav">
+                <div class="logo-area">
+                    <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img">
+                </div>
+
+                <ul class="nav-links">
+                    <a href="{% url 'dashboard:index' %}" class="active">Home</a>
+
+                    <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+
+                    <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+
+                    <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+                    
+                    <a href="{% url 'dashboard:profile' %}">Profile</a>
+                </ul>
+
+                <div class="nav-cta">
+                    <a href="#" class="btn-contact">Contact Us</a>
+                </div>
+            </nav>
+
+
+        <div class="page-content">
+
+                <nav class="first-container">
+
+                    <div class="slide active"
+                        style="background-image: url({% static 'image/protonemas1.jpg' %});">
+                        
+                        <div class="slide-content">
+                            <h1>Start Your Journey<br>With Emas Today</h1>
+                            <a href="#about" class="btn-learn-more">Explore More Things</a>
+                        </div>
+
+                    </div>
+
+                    <div class="slide"
+                        style="background-image: url({% static 'image/home_emas1.jpg' %});">
+
+                        <div class="slide-content">
+                            <h1>Latest Model EV<br>Wait You</h1>
+                            <a href="#" class="btn-learn-more">Learn More </a>
+                        </div>
+
+                    </div>
+
+                    <div class="next-trigger">
+                        <div class="arrow-icon">></div>
+                    </div>
+
+                    <div class="indicators">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                    </div>
+
+                </nav>
+
+                <div class="second-container" id="about">
+
+                    <div class="sub-container2-1">
+                            <span class="badge">About Us</span>
+                    </div>
+
+                    <div class="sub-container2-2">
+
+                        <h1>Discover Why AutoCareX is <br> Your Perfect Choice</h1>
+                        <p class="description">
+                            We are dedicated to providing the <span class="highlight">best vehicles</span> and an <span class="highlight">all-in-one EV platform for Proton e.MAS owners</span>.<br>With <span class="highlight">years of experience</span>, our professional team is ready to <span class="highlight">assist you in finding the perfect car</span> and help you <span class="highlight">track vehicle condition, improve performance, and enhance safety</span>—from consultation to ownership.
+                        </p>
+
+                        <div class ="vision-mission-flex">
+
+                            <div class="sub-container2-2-1">
+                                <div class="left-bar">
+                                    <div class="red-line"></div>
+                                </div>
+
+                                <div class="right-content">
+                                    <h3>Mission</h3>
+                                    <p>To be the most trusted EV management platform for Proton e.MAS owners.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sub-container2-2-2">
+                                <div class="left-bar">
+                                    <div class="red-line"></div>
+                                </div>
+
+                                <div class="right-content">
+                                    <h3>Vision</h3>
+                                    <p>To create a smart and connected EV ownership experience.</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="image-wrapper">
+                    <img src="{% static 'image/aboutus.png' %}">
+                </div>
+
+
+                <!-- ===== DASHBOARD SECTION (logged in users) ===== -->
+                {% if user.is_authenticated %}
+                <div class="dashboard-section" id="dashboard">
+
+                    <div class="dash-header">
+                        <span class="badge">My Dashboard</span>
+                        <h1>Welcome back,<br>{{ user.username }}</h1>
+                        <p class="dash-subtext">Here is a quick overview of your vehicles and upcoming maintenance.</p>
+                    </div>
+
+                    <!-- ALERT BANNER -->
+                    {% if red_count %}
+                    <div class="dash-alert-banner urgent">
+                        <span>🚨</span>
+                        <span><strong>{{ red_count }} overdue service{{ red_count|pluralize }}</strong> across your vehicles — action needed.</span>
+                        <a href="{% url 'dashboard:vehicle' %}">View →</a>
+                    </div>
+                    {% elif alert_count %}
+                    <div class="dash-alert-banner warning">
+                        <span>⚠️</span>
+                        <span><strong>{{ alert_count }} service{{ alert_count|pluralize }} due soon</strong> across your vehicles.</span>
+                        <a href="{% url 'dashboard:vehicle' %}">View →</a>
+                    </div>
+                    {% endif %}
+
+                    <!-- VEHICLE SUMMARY CARDS -->
+                    {% if cars %}
+                    <div class="dash-vehicles-grid">
+                        {% for car in cars %}
+                        <div class="dash-car-card">
+                            <div class="dcc-top">
+                                <div class="dcc-dot {{ car.dot_class }}">{{ car.dot_label }}</div>
+                                <div class="dcc-info">
+                                    <div class="dcc-name">{{ car.nickname }}</div>
+                                    <div class="dcc-model">{{ car.year }} · Proton {{ car.model }}</div>
+                                </div>
+                            </div>
+                            <div class="dcc-stats">
+                                <div class="dcc-stat">
+                                    <div class="dcs-label">Mileage</div>
+                                    <div class="dcs-val">{{ car.mileage|floatformat:0 }} km</div>
+                                </div>
+                                <div class="dcc-stat">
+                                    <div class="dcs-label">Battery</div>
+                                    <div class="dcs-val" style="color:{% if car.battery_percent >= 70 %}#1D9E75{% elif car.battery_percent >= 40 %}#EF9F27{% else %}#E24B4A{% endif %}">
+                                        {{ car.battery_percent }}%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dcc-actions">
+                                <a href="{% url 'dashboard:maintenance' car.id %}" class="dcc-btn">Maintenance</a>
+                                <a href="{% url 'dashboard:upgrade' %}?car={{ car.id }}" class="dcc-btn-outline">Suggestions</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Add new car shortcut -->
+                        <a href="{% url 'dashboard:vehicle' %}" class="dash-add-card">
+                            <div class="dac-icon">+</div>
+                            <div class="dac-label">Add Vehicle</div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="dash-empty">
+                        <div style="font-size:48px;margin-bottom:12px;">🚗</div>
+                        <h3>No vehicles yet</h3>
+                        <p>Add your Proton e.MAS to start tracking maintenance and get personalised tips.</p>
+                        <a href="{% url 'dashboard:vehicle' %}" class="dcc-btn" style="display:inline-block;margin-top:12px;">Add Vehicle →</a>
+                    </div>
+                    {% endif %}
+
+                    <!-- RECENT ACTIVITY -->
+                    {% if recent_logs %}
+                    <div class="dash-recent">
+                        <div class="dash-recent-title">Recent Activity</div>
+                        <div class="dash-recent-list">
+                            {% for log in recent_logs %}
+                            <div class="recent-item">
+                                <div class="ri-icon">🔧</div>
+                                <div class="ri-body">
+                                    <div class="ri-title">{{ log.vehicle.nickname }} — {{ log.component|title }}</div>
+                                    <div class="ri-meta">{{ log.service_date|date:"d M Y" }} · {{ log.odometer|floatformat:0 }} km{% if log.cost %} · RM {{ log.cost }}{% endif %}</div>
+                                </div>
+                                <a href="{% url 'dashboard:service_history' log.vehicle.id %}" class="ri-link">View →</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <style>
+                    .dashboard-section { max-width:1100px; width:90%; margin:80px auto 0; padding:20px; }
+                    .dash-header { text-align:center; margin-bottom:36px; }
+                    .dash-header h1 { font-size:48px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; }
+                    .dash-subtext { font-size:15px; color:#666; max-width:480px; margin:0 auto; line-height:1.7; }
+                    .dash-alert-banner { display:flex; align-items:center; gap:12px; padding:14px 20px; border-radius:12px; margin-bottom:28px; font-size:14px; flex-wrap:wrap; }
+                    .dash-alert-banner a { margin-left:auto; font-weight:700; text-decoration:none; color:inherit; border-bottom:2px solid currentColor; }
+                    .dash-alert-banner.urgent  { background:#FCEBEB; color:#A32D2D; }
+                    .dash-alert-banner.warning { background:#FAEEDA; color:#633806; }
+                    .dash-vehicles-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px; margin-bottom:48px; }
+                    .dash-car-card { background:#fff; border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+                    .dcc-top { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+                    .dcc-dot { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0; }
+                    .dot-5    { background:#1D9E75; }
+                    .dot-7    { background:#378ADD; }
+                    .dot-phev { background:#9B59B6; }
+                    .dcc-name  { font-size:15px; font-weight:700; color:#1a1a1a; }
+                    .dcc-model { font-size:12px; color:#888; margin-top:2px; }
+                    .dcc-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+                    .dcc-stat { background:#f8f8f8; border-radius:8px; padding:10px 12px; }
+                    .dcs-label { font-size:11px; color:#888; margin-bottom:3px; }
+                    .dcs-val   { font-size:16px; font-weight:700; color:#1a1a1a; }
+                    .dcc-actions { display:flex; gap:8px; }
+                    .dcc-btn { font-size:12px; font-weight:700; padding:7px 14px; background:rgb(224,224,59); color:#000; border-radius:6px; text-decoration:none; transition:.2s; }
+                    .dcc-btn:hover { background:#1a1a1a; color:#fff; }
+                    .dcc-btn-outline { font-size:12px; font-weight:700; padding:7px 14px; background:transparent; color:#333; border:1.5px solid #ddd; border-radius:6px; text-decoration:none; transition:.2s; }
+                    .dcc-btn-outline:hover { border-color:#1a1a1a; background:#1a1a1a; color:#fff; }
+                    .dash-add-card { background:#f9f9f9; border-radius:16px; border:2px dashed #ddd; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px; text-decoration:none; transition:.2s; }
+                    .dash-add-card:hover { border-color:#1a1a1a; background:#fff; }
+                    .dac-icon  { font-size:32px; color:#ccc; margin-bottom:8px; }
+                    .dac-label { font-size:13px; font-weight:600; color:#aaa; }
+                    .dash-add-card:hover .dac-icon, .dash-add-card:hover .dac-label { color:#1a1a1a; }
+                    .dash-empty { text-align:center; padding:50px 20px; background:#fff; border-radius:16px; margin-bottom:48px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+                    .dash-empty h3 { font-size:20px; font-weight:700; margin-bottom:8px; }
+                    .dash-empty p { font-size:14px; color:#888; }
+                    .dash-recent { margin-bottom:20px; }
+                    .dash-recent-title { font-size:18px; font-weight:700; color:#1a1a1a; margin-bottom:14px; }
+                    .dash-recent-list { display:flex; flex-direction:column; gap:8px; }
+                    .recent-item { background:#fff; border-radius:12px; padding:14px 18px; box-shadow:0 2px 8px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px; }
+                    .ri-icon { font-size:22px; flex-shrink:0; }
+                    .ri-body { flex:1; }
+                    .ri-title { font-size:14px; font-weight:600; color:#1a1a1a; }
+                    .ri-meta  { font-size:12px; color:#888; margin-top:2px; }
+                    .ri-link  { font-size:12px; font-weight:700; color:#1a1a1a; text-decoration:none; border-bottom:2px solid rgb(224,224,59); padding-bottom:1px; white-space:nowrap; }
+                    .ri-link:hover { color:rgb(180,180,0); }
+                </style>
+                {% endif %}
+
+                <div class="third-container">
+
+                    <div class="third-header">
+                        <span class="badge2">Our Updates</span>
+                        <h1>Latest News & Car Insights</h1>
+                    </div>
+
+                    <div class="news-grid">
+                        <nav class="news-card">
+                            <div class="card-image">
+                                <img src="{% static 'image/news1.jpg' %}">
+                            </div>
+                            <div class="card-content">
+                                <h3>Proton eMas 7 PHEV Surges in First Month</h3>
+                                <p class="new-description">
+                                    Proton's plug-in hybrid records 646 units in its first full month, more than doubling the EV variant and highlighting rising demand.
+                                </p>
+                                <a href="https://paultan.org/2026/04/02/proton-emas-7-phev-646-units-in-first-full-month-of-sales-more-than-double-emas-7-march-2026-figures/?utm_source=chatgpt.com"  target="_blank" rel="noopener noreferrer" class="read-more">Read More →</a>
+                            </div>
+                        </nav>
+
+                        <nav class="news-card">
+                            <div class="card-image">
+                                <img src="{% static 'image/news2.jpg' %}">
+                            </div>
+                            <div class="card-content">
+                                <h3>Proton eMas 7 Gets Cheaper Variant for Singapore</h3>
+                                <p class="new-description">
+                                    A new 100 kW version is introduced to qualify for lower COE costs, making the model more accessible in Singapore.
+                                </p>
+                                <a href="https://autobuzz.my/2026/01/12/proton-emas-7-to-get-detuned-100-kw-variant-in-singapore-for-cheaper-cat-a-coe/"  target="_blank" rel="noopener noreferrer" class="read-more">Read More →</a>
+                            </div>
+                        </nav>
+
+                        <nav class="news-card">
+                            <div class="card-image">
+                                <img src="{% static 'image/new3.jpg' %}">
+                            </div>
+                            <div class="card-content">
+                                <h3>Proton eMas 7 Adds Android Auto via OTA</h3>
+                                <p class="new-description">
+                                    An OTA update finally brings Android Auto support, improving connectivity and enhancing the overall infotainment experience.
+                                </p>
+                                <a href="https://autobuzz.my/2025/12/26/proton-emas-7-finally-adds-android-auto-support-via-ota-update/"  target="_blank" rel="noopener noreferrer" class="read-more">Read More →</a>
+                            </div>
+                        </nav>
+
+                        <nav class="news-card">
+                            <div class="card-image">
+                                <img src="{% static 'image/news4.avif' %}">
+                            </div>
+                            <div class="card-content">
+                                <h3>Proton eMas 5 Tested in Real-World Drive</h3>
+                                <p class="new-description">
+                                    Real-world testing showcases its practicality and efficiency, proving it can handle daily use with surprising versatility.
+                                </p>
+                                <a href="https://www.zigwheels.my/car-news/first-impressions-proton-emas-5-real-world-usage-genting-run-and-13-durians-in-the-frunk" class="read-more"  target="_blank" rel="noopener noreferrer">Read More →</a>
+                            </div>
+                        </nav>
+                    </div>
+
+                </div>
+
+                <footer class="footer-container">
+
+                        <div class="footer-top">
+
+                            <div class="logo">
+                                <img src="{% static 'image/autocarexlogowhhite.png' %}"> 
+                            </div>
+
+                            <nav class="footer-nav">
+                                <a href="{% url 'dashboard:index' %}">Home</a>
+
+                                <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+
+                                <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+
+                                <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+                                
+                                <a href="{% url 'dashboard:profile' %}">Profile</a>
+                            </nav>
+
+                        </div>
+
+                        <hr class="footer-divider">
+
+                        <div class="footer-bottom">
+
+                            <div class="footer-email">
+                            Email Example@Gmail.com
+                            </div>
+                            
+                            <div class="footer-socials">
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-x-twitter"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                            </div>
+
+                            <div class="footer-copyright">
+                            Copyright © 2026 Brand | All Rights Reserved
+                            </div>
+                        </div>
+                </footer>
+        </div>
+
+        <script src="{% static 'js/script.js' %}"></script>
+
+    </body>
+ 
+</html>
