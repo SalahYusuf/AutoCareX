@@ -73,7 +73,7 @@ def signup_view(request):
             messages.error(
                 request,
                 "Account was not created because the verification email could not be sent. "
-                "Check your email settings or use the terminal verification link in local testing.",
+                "Account was not created because the verification email could not be sent. Please check the Gmail email settings in your .env file.",
             )
             return render(request, "login/signup.html")
 

@@ -36,12 +36,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv(
-        "CSRF_TRUSTED_ORIGINS",
-        "",
-    ).split(",")
-    if origin.strip()
+    "https://autocarex.onrender.com",
 ]
 
 
