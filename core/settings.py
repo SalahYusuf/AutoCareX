@@ -31,12 +31,17 @@ SECRET_KEY = 'django-insecure-uhk&498nlz&bq3c2-lu*%!)h&6*2j&*2-cwmm$)8+qp*^am3y8
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv(
-        "ALLOWED_HOSTS",
-        "127.0.0.1,localhost",
+    "autocarex.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "",
     ).split(",")
-    if host.strip()
+    if origin.strip()
 ]
 
 
