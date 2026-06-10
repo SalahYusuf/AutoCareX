@@ -74,10 +74,12 @@ def vehicle(request):
                 _seed_schedules(car)
                 messages.success(request, f'"{nickname}" added to your garage.')
 
-        elif action == 'delete_car':
-            car = get_object_or_404(Vehicle, id=request.POST.get('car_id'), owner=request.user)
-            car.delete()
-            messages.success(request, 'Car removed from your garage.')
+        elif action == "delete_car":
+            ids = request.POST.getlist("delete_ids")
+            Vehicle.objects.filter(
+                id__in=ids,
+                owner=request.user
+            ).delete()
 
         elif action == 'update_mileage':
             car = get_object_or_404(Vehicle, id=request.POST.get('car_id'), owner=request.user)
@@ -93,10 +95,24 @@ def vehicle(request):
         return redirect('dashboard:vehicle')
 
     cars = Vehicle.objects.filter(owner=request.user)
-    selected_id  = request.GET.get('car')
+
+    # attach images for all cars
+    for car in cars:
+        car.image = car.get_image()
+        car.engine_image = car.get_engine_image()
+
+    selected_id = request.GET.get('car')
+
     selected_car = cars.filter(id=selected_id).first() if selected_id else None
+
+    # fallback FIRST (IMPORTANT)
     if not selected_car and cars.exists():
         selected_car = cars.first()
+
+    # now safe to attach images
+    if selected_car:
+        selected_car.image = selected_car.get_image()
+        selected_car.engine_image = selected_car.get_engine_image()
 
     return render(request, 'vehicle.html', {
         'cars':         cars,

@@ -38,7 +38,22 @@ class Vehicle(models.Model):
     def dot_class(self):
         classes = {'EMAS 5': 'dot-5', 'EMAS 7': 'dot-7', 'EMAS PHEV': 'dot-phev'}
         return classes.get(self.model, 'dot-5')
-
+    
+    def get_image(self):
+        images = {
+            "EMAS 5": "image/emas5transparent.png",
+            "EMAS 7": "image/emas7transparent.png",
+            "EMAS PHEV": "image/emasphevtransparent.png",
+        }
+        return images.get(self.model, "image/emas5transparent.png")
+    
+    def get_engine_image(self):
+        engines = {
+            "EMAS 5": "image/emas5engine1.png",
+            "EMAS 7": "image/emas7engine1.png",
+            "EMAS PHEV": "image/emasphevengine1.png",
+        }
+        return engines.get(self.model, "image/emas5engine1.png")
 
 # ── ServiceSchedule ────────────────────────────────────────────────────────────
 

@@ -42,7 +42,7 @@
 
             <div class="app-container">
 
-                {% if messages %}{% for message in messages %}<div style="background:{% if message.tags == 'error' %}#fff0f0;color:#c0392b{% else %}#f0fff4;color:#1a7a4a{% endif %};padding:10px 20px;border-radius:8px;margin:10px 20px;font-size:14px;">{{ message }}</div>{% endfor %}{% endif %}
+
                 <!-- TOP NOTIFICATION -->
 
                 <div class="top-notification">
@@ -91,34 +91,25 @@
                         <div class="car-list">
 
                             {% for car in cars %}
+                            <a href="?car={{ car.id }}" style="text-decoration:none;">
+                                
+                                <div class="car-item {% if car.id == selected_car.id %}active{% endif %}">
+                                    
+                                    <div class="car-left">
 
-                            <a href="?car={{ car.id }}" style="text-decoration:none;"><label class="car-item" for="car{{ forloop.counter }}" style="cursor:pointer;">
+                                        <div class="car-dot {{ car.dot_class }} {% if car.id == selected_car.id %}active-dot{% endif %}">
+                                            {{ car.dot_label }}
+                                        </div>
 
-                                <input 
-                                type="radio" 
-                                id="car{{ forloop.counter }}"
-                                name="selected-car" 
-                                class="car-check">
+                                        <div class="car-info">
+                                            <h4>{{ car.nickname }}</h4>
+                                            <p>{{ car.year }} • {{ car.model }}</p>
+                                        </div>
 
-                                <div class="car-left">
-
-                                    <!-- DOT -->
-                                    <div class="car-dot
-                                        {{ selected_car.dot_class }}">
-
-                                        {{ selected_car.dot_label }}
-
-                                    </div>
-
-                                    <!-- INFO -->
-                                    <div class="car-info">
-                                        <h4>{{ selected_car.nickname }}</h4>
-                                        <p>{{ selected_car.year }} • {{ selected_car.model }}</p>
                                     </div>
 
                                 </div>
-
-                            </label></a>
+                            </a>
                             {% endfor %}
 
                         </div>
@@ -127,9 +118,19 @@
 
                     </div>
 
-                        <div class="action">
-                            <button class="create-btn">Create More</button>
-                        </div>
+                    <div class="action">
+
+                        <button class="create-btn" type="button">
+                            Create More
+                        </button>
+
+                        {% if car_count > 0 %}
+                        <button class="delete-btn" type="button" onclick="openDelete()">
+                            Delete Car
+                        </button>
+                        {% endif %}
+
+                    </div>
 
                         <!-- FORM MODE -->
 
@@ -219,7 +220,6 @@
 
                 </aside>
 
-
                 <!-- =========================
                     CENTER : CAR DISPLAY
                 ========================== -->
@@ -233,25 +233,21 @@
                             <p>{{ selected_car.year|default:"" }} • Proton {{ selected_car.model|default:"e.MAS" }}</p>
                         </div>
 
-                        <div class="car-display-container">
+                        <div class="car-display-container model-{{ selected_car.model|slugify }}">
 
                             <input type="checkbox" id="engineToggle" hidden>
 
                             <input type="checkbox" id="tyreToggle" hidden>
 
-                            <img  
-                            class="main-car-img emas5-car" 
-                            src="{% static 'image/emas5transparent.png' %}">
-                            
-                            <img 
-                            class="main-car-img engine-car" 
-                            src="{% static 'image/emas5engine1.png' %}">
+                            <img class="main-car-img" src="{% static selected_car.image %}">
+
+                            <img class="engine-car" src="{% static selected_car.engine_image %}">
 
                             <label for="engineToggle" class="engine-close">✕</label>
 
-                            <label for="tyreToggle" class="hotspot-dot hs-1"></label>
+                            <label for="tyreToggle" class="hotspot-dot tyre-hotspot"></label>
 
-                            <label for="engineToggle" class="hotspot-dot hs-2"></label>
+                            <label for="engineToggle" class="hotspot-dot openengine-hotspot"></label>
 
                             <!-- TYRE CARD -->
 
@@ -336,7 +332,7 @@
 
                                 <div class="progress-top">
 
-                                    <img src="{{ url_for('static', filename='image/battery.avif') }}">
+                                    <img src="{% static 'image/battery.avif' %}">
 
                                     <div class="status-circle">
                                         <span>88%</span>
@@ -360,7 +356,7 @@
 
                                 <div class="progress-top">
 
-                                    <img src="{{ url_for('static', filename='image/gear.jpg') }}">
+                                    <img src="{% static 'image/gear.jpg' %}">
 
                                     <div class="status-circle">
                                         <span>88%</span>
@@ -644,17 +640,80 @@
                 </div>
             </footer>
 
-            
+            <div id="deleteOverlay" class="overlay hidden">
 
+                <div class="delete-modal">
 
+                    <h2>Delete Cars</h2>
+
+                    <form method="POST" action="{% url 'dashboard:vehicle' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_car">
+
+                        <div class="delete-list">
+
+                            {% for car in cars %}
+                            <label class="delete-item">
+
+                                <input type="checkbox" name="delete_ids" value="{{ car.id }}">
+
+                                <!-- 🔥 DOT + INFO (same as left panel) -->
+                                <div class="car-left">
+
+                                    <div class="car-dot {{ car.dot_class }}">
+                                        {{ car.dot_label }}
+                                    </div>
+
+                                    <div class="car-info">
+                                        <h4>{{ car.nickname }}</h4>
+                                        <p>{{ car.year }} • {{ car.model }}</p>
+                                    </div>
+
+                                </div>
+
+                            </label>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="button" onclick="closeDelete()" class="cancel-btn">
+                                Cancel
+                            </button>
+
+                            <button type="submit" class="danger-btn">
+                                Delete Selected
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
 
         <script>
             function switchToForm() {
                 document.getElementById("evcard").classList.add("form-active");
+                document.getElementById("deleteMode").style.display = "none";
             }
 
             function switchToView() {
                 document.getElementById("evcard").classList.remove("form-active");
+                document.getElementById("deleteMode").style.display = "none";
+            }
+
+            function switchToDelete() {
+                document.getElementById("evcard").classList.add("form-active");
+                document.getElementById("deleteMode").style.display = "block";
+            }
+
+            function openDelete() {
+                document.getElementById("deleteOverlay").classList.remove("hidden");
+            }
+
+            function closeDelete() {
+                document.getElementById("deleteOverlay").classList.add("hidden");
             }
 
             document.querySelector(".create-btn").addEventListener("click", switchToForm);
