@@ -1,0 +1,313 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
+        <title>AutoCareX - Profile</title>
+        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
+        <link rel="stylesheet" href="{% static 'css/trans.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <style>
+            .profile-wrapper {
+                min-height: 100vh;
+                padding: 120px 40px 80px;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 40px;
+                flex-wrap: wrap;
+                background: #f9f9f9;
+            }
+
+            .profile-card {
+                background: #fff;
+                border-radius: 20px;
+                padding: 40px;
+                width: 100%;
+                max-width: 480px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            }
+
+            .profile-card h2 {
+                font-size: 28px;
+                font-weight: 700;
+                color: rgb(90, 88, 137);
+                margin-bottom: 8px;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .profile-card .sub {
+                font-size: 14px;
+                color: #888;
+                margin-bottom: 32px;
+                font-family: serif;
+            }
+
+            .avatar-circle {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: rgb(90, 88, 137);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 32px;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 24px;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .form-group {
+                margin-bottom: 28px;
+            }
+
+            .form-group label {
+                display: block;
+                font-size: 18px;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin-bottom: 6px;
+                color: #222;
+            }
+
+            .form-group input {
+                width: 85%;
+                border: none;
+                border-bottom: 2px solid grey;
+                outline: none;
+                font-size: 16px;
+                padding: 6px 0;
+                background: transparent;
+                font-family: 'Segoe UI', sans-serif;
+                color: #333;
+            }
+
+            .form-group input::placeholder {
+                color: rgb(155, 151, 147);
+                font-style: italic;
+                opacity: 0.5;
+            }
+
+            .form-group input:focus::placeholder {
+                color: transparent;
+            }
+
+            .profile-btn {
+                background-color: rgb(245, 188, 56);
+                color: black;
+                padding: 12px 30px;
+                border: none;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                width: 60%;
+                height: 50px;
+                position: relative;
+                overflow: hidden;
+                font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+                margin-top: 16px;
+            }
+
+            .profile-btn span {
+                position: relative;
+                z-index: 5;
+                color: black;
+                transition: color 0.4s ease;
+            }
+
+            .profile-btn::before {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background-color: black;
+                top: 0;
+                left: -100%;
+                z-index: 1;
+                transition: left 0.4s ease;
+            }
+
+            .profile-btn:hover::before { left: 0; }
+            .profile-btn:hover span { color: white; }
+
+            .messages-box {
+                margin-bottom: 20px;
+            }
+
+            .msg {
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 14px;
+                margin-bottom: 8px;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .msg-error   { background: #fff0f0; color: #c0392b; border: 1px solid #f5c6c6; }
+            .msg-success { background: #f0fff4; color: #1a7a4a; border: 1px solid #b7e4c7; }
+
+            .logout-link {
+                display: inline-block;
+                margin-top: 20px;
+                font-size: 14px;
+                color: #c0392b;
+                font-family: 'Arial Black';
+                font-weight: bold;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .logout-link:hover { text-decoration: underline; }
+
+            .divider {
+                border: none;
+                border-top: 1px solid #eee;
+                margin: 32px 0;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="page-overlay"></div>
+
+        <div class="page-content">
+
+            <nav class="floating-nav">
+                <div class="logo-area">
+                    <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img">
+                </div>
+
+                <ul class="nav-links">
+                    <a href="{% url 'dashboard:index' %}">Home</a>
+                    <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+                    <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+                    <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+                    <a href="{% url 'dashboard:profile' %}" class="active">Profile</a>
+                </ul>
+
+                <div class="nav-cta">
+                    <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
+                </div>
+            </nav>
+
+            <div class="profile-wrapper">
+
+                <!-- ACCOUNT INFO CARD -->
+                <div class="profile-card">
+
+                    <div class="avatar-circle">
+                        {{ request.user.username|first|upper }}
+                    </div>
+
+                    <h2>Account Info</h2>
+                    <p class="sub">Update your username or email address.</p>
+
+                    {% if messages %}
+                    <div class="messages-box">
+                        {% for message in messages %}
+                        <div class="msg {% if message.tags == 'error' %}msg-error{% else %}msg-success{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_info">
+
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" name="username" value="{{ request.user.username }}" placeholder="Enter username">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" name="email" value="{{ request.user.email }}" placeholder="Enter email">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Member Since</label>
+                            <input type="text" value="{{ request.user.date_joined|date:'d M Y' }}" disabled style="color:#aaa;">
+                        </div>
+
+                        <button type="submit" class="profile-btn"><span>Save Changes</span></button>
+                    </form>
+
+                    <hr class="divider">
+
+                    <a href="{% url 'login:logout' %}" class="logout-link">Logout from AutoCareX →</a>
+
+                </div>
+
+                <!-- CHANGE PASSWORD CARD -->
+                <div class="profile-card">
+
+                    <div class="avatar-circle" style="background: #1a1a2e;">
+                        <i class="fa fa-lock" style="font-size:30px;"></i>
+                    </div>
+
+                    <h2>Change Password</h2>
+                    <p class="sub">Keep your account secure with a strong password.</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="change_password">
+
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" name="current_password" placeholder="Enter current password">
+                        </div>
+
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" name="new_password" placeholder="Min 8 characters">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" name="confirm_password" placeholder="Repeat new password">
+                        </div>
+
+                        <button type="submit" class="profile-btn"><span>Update Password</span></button>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <footer class="footer-container">
+                <div class="footer-top">
+                    <div class="logo">
+                        <img src="{% static 'image/autocarexlogowhhite.png' %}">
+                    </div>
+                    <nav class="footer-nav">
+                        <a href="{% url 'dashboard:index' %}">Home</a>
+                        <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+                        <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+                        <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+                        <a href="{% url 'dashboard:profile' %}">Profile</a>
+                    </nav>
+                </div>
+                <hr class="footer-divider">
+                <div class="footer-bottom">
+                    <div class="footer-email">Email Example@Gmail.com</div>
+                    <div class="footer-socials">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-x-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <div class="footer-copyright">Copyright © 2026 Brand | All Rights Reserved</div>
+                </div>
+            </footer>
+
+        </div>
+
+        <script src="{% static 'js/script.js' %}"></script>
+
+    </body>
+
+</html>

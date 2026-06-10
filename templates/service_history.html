@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
+    <title>AutoCareX - Service History</title>
+    <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/trans.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .hist-wrapper { min-height:100vh; padding:120px 40px 80px; background:#f9f9f9; max-width:1000px; margin:0 auto; }
+        .hist-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+        .hist-header h1 { font-size:30px; font-weight:700; color:#1a1a1a; }
+        .hist-header p  { font-size:14px; color:#888; margin-top:4px; }
+        .btn-yellow { background:rgb(245,188,56); color:#000; padding:10px 22px; border:none; font-size:13px; font-weight:700; cursor:pointer; text-decoration:none; border-radius:4px; transition:.2s; }
+        .btn-yellow:hover { background:#000; color:#fff; }
+        .log-table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+        .log-table th { background:#1a1a1a; color:#fff; padding:14px 18px; font-size:13px; text-align:left; }
+        .log-table td { padding:12px 18px; font-size:13px; color:#333; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+        .log-table tr:last-child td { border-bottom:none; }
+        .log-table tr:hover td { background:#fafafa; }
+        .comp-badge { display:inline-block; font-size:11px; padding:2px 10px; border-radius:99px; font-weight:600; background:#f0f0f0; color:#555; }
+        .empty-state { text-align:center; padding:60px; color:#aaa; font-size:14px; background:#fff; border-radius:12px; }
+        .back-link { display:inline-block; margin-bottom:20px; font-size:13px; color:#888; text-decoration:none; }
+        .back-link:hover { color:#000; }
+        .total-bar { background:#fff; border-radius:12px; padding:16px 20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,.06); display:flex; gap:32px; flex-wrap:wrap; }
+        .total-item { }
+        .total-label { font-size:12px; color:#888; }
+        .total-val { font-size:20px; font-weight:700; color:#1a1a1a; }
+    </style>
+</head>
+<body>
+<div class="page-overlay"></div>
+<div class="page-content">
+
+    <nav class="floating-nav">
+        <div class="logo-area"><img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img"></div>
+        <ul class="nav-links">
+            <a href="{% url 'dashboard:index' %}">Home</a>
+            <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+            <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+            <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+            <a href="{% url 'dashboard:profile' %}">Profile</a>
+        </ul>
+        <div class="nav-cta"><a href="{% url 'login:logout' %}" class="btn-contact">Logout</a></div>
+    </nav>
+
+    <div class="hist-wrapper">
+
+        <a href="{% url 'dashboard:maintenance' car.id %}" class="back-link">← Back to maintenance</a>
+
+        <div class="hist-header">
+            <div>
+                <h1>Service History — {{ car.nickname }}</h1>
+                <p>{{ car.year }} Proton {{ car.model }} &nbsp;·&nbsp; {{ car.mileage|floatformat:0 }} km</p>
+            </div>
+            <a href="{% url 'dashboard:log_service' car.id %}" class="btn-yellow"><i class="fa fa-plus"></i> Log Service</a>
+        </div>
+
+        {% if logs %}
+        <div class="total-bar">
+            <div class="total-item">
+                <div class="total-label">Total services</div>
+                <div class="total-val">{{ logs.count }}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Total spent</div>
+                <div class="total-val">RM {% with total=logs|length %}{% for log in logs %}{% endfor %}0{% endwith %}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Last service</div>
+                <div class="total-val">{{ logs.0.service_date|date:"d M Y" }}</div>
+            </div>
+        </div>
+
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Component</th>
+                    <th>Odometer</th>
+                    <th>Description</th>
+                    <th>Cost (RM)</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.service_date|date:"d M Y" }}</td>
+                    <td><span class="comp-badge">{{ log.component|title }}</span></td>
+                    <td>{{ log.odometer|floatformat:0 }} km</td>
+                    <td>{{ log.description|default:"—" }}</td>
+                    <td>{% if log.cost %}RM {{ log.cost }}{% else %}—{% endif %}</td>
+                    <td>{{ log.notes|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            No service logs yet for {{ car.nickname }}.<br>
+            <a href="{% url 'dashboard:log_service' car.id %}" style="color:#1D9E75;font-weight:600;">Log your first service →</a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <footer class="footer-container">
+        <div class="footer-top">
+            <div class="logo"><img src="{% static 'image/autocarexlogowhhite.png' %}"></div>
+            <nav class="footer-nav">
+                <a href="{% url 'dashboard:index' %}">Home</a>
+                <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+                <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+                <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+                <a href="{% url 'dashboard:profile' %}">Profile</a>
+            </nav>
+        </div>
+        <hr class="footer-divider">
+        <div class="footer-bottom">
+            <div class="footer-email">Email Example@Gmail.com</div>
+            <div class="footer-socials">
+                <a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div class="footer-copyright">Copyright © 2026 Brand | All Rights Reserved</div>
+        </div>
+    </footer>
+
+</div>
+<script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

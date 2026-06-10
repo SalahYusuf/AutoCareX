@@ -1,31 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
     <head>
-        <link rel="icon" href="{{ url_for('static', filename='image/autocarexlogoblack.png') }}">
+        <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
         <title>AutoCareX - Manage Car</title>
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/stylevehicle.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/trans.css') }}">
+        <link rel="stylesheet" href="{% static 'css/stylevehicle.css' %}">
+        <link rel="stylesheet" href="{% static 'css/trans.css' %}">
     </head>
 
     <body>
 
             <nav class="floating-nav">
                 <div class="logo-area">
-                    <img src="{{ url_for('static', filename='image/autocarexlogowhhite.png') }}" class="nav-logo-img">
+                    <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img">
                 </div>
 
                 <ul class="nav-links">
-                    <a href="{{ url_for('home') }}">Home</a>
+                    <a href="{% url 'dashboard:index' %}">Home</a>
 
-                    <a href="{{ url_for('vehicle') }}" class="active">Manage Car</a>
+                    <a href="{% url 'dashboard:vehicle' %}" class="active">Manage Car</a>
 
-                    <a href="{{ url_for('location') }}">Car Workshop</a>
+                    <a href="{% url 'dashboard:location' %}">Car Workshop</a>
 
                     <a href="{{ url_for('upgrade') }}">Contact us</a>
                     
-                    <li><a href="#">Profile</a></li>
+                    <a href="{% url 'dashboard:profile' %}">Profile</a>
                 </ul>
 
                 <div class="nav-cta">
@@ -41,6 +42,7 @@
 
             <div class="app-container">
 
+                {% if messages %}{% for message in messages %}<div style="background:{% if message.tags == 'error' %}#fff0f0;color:#c0392b{% else %}#f0fff4;color:#1a7a4a{% endif %};padding:10px 20px;border-radius:8px;margin:10px 20px;font-size:14px;">{{ message }}</div>{% endfor %}{% endif %}
                 <!-- TOP NOTIFICATION -->
 
                 <div class="top-notification">
@@ -91,11 +93,11 @@
 
                             {% for car in cars %}
 
-                            <label class="car-item" for="car{{loop.index}}" data-model="{{car.model}}" data-name="{{car.nickname}}" data-year="{{car.year}}">
+                            <a href="?car={{ car.id }}" style="text-decoration:none;"><label class="car-item" for="car{{ forloop.counter }}" style="cursor:pointer;">
 
                                 <input 
                                 type="radio" 
-                                id="car{{loop.index}}"
+                                id="car{{ forloop.counter }}"
                                 name="selected-car" 
                                 class="car-check">
 
@@ -103,30 +105,21 @@
 
                                     <!-- DOT -->
                                     <div class="car-dot
-                                        {% if car.model == 'EMAS 5' %}dot-5
-                                        {% elif car.model == 'EMAS 7' %}dot-7
-                                        {% else %}dot-phev{% endif %}">
+                                        {{ selected_car.dot_class }}">
 
-                                        {% if car.model == "EMAS 5" %}
-                                            e5
-                                        {% elif car.model == "EMAS 7" %}
-                                            e7
-                                        {% else %}
-                                            PH
-                                        {% endif %}
+                                        {{ selected_car.dot_label }}
 
                                     </div>
 
                                     <!-- INFO -->
                                     <div class="car-info">
-                                        <h4>{{ car.nickname }}</h4>
-                                        <p>{{ car.year }} • {{ car.model }}</p>
+                                        <h4>{{ selected_car.nickname }}</h4>
+                                        <p>{{ selected_car.year }} • {{ selected_car.model }}</p>
                                     </div>
 
                                 </div>
 
-                            </label>
-
+                            </label></a>
                             {% endfor %}
 
                         </div>
@@ -147,7 +140,9 @@
                                 <h1>Add New Car</h1>
                             </div>
 
-                            <form id="carForm" method="POST" action="/add_car">
+                            <form id="carForm" method="POST" action="{% url 'dashboard:vehicle' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="add_car">
 
                                 <div class="form-group">
                                     <label>1. Car Nickname</label>
@@ -235,58 +230,29 @@
                     <section class="hero-section">
 
                         <div class="hero-title">
-                            <h2 id="carTitle">
-                                {{ first_car.nickname }} ({{ first_car.year }})
-                            </h2>
-
-                            <p id="carModel">
-                                {{ first_car.model }}
-                            </p>
+                            <h2>{{ selected_car.nickname|default:"My Car" }}</h2>
+                            <p>{{ selected_car.year|default:"" }} • Proton {{ selected_car.model|default:"e.MAS" }}</p>
                         </div>
 
-                        <div class="car-display-container" id="carContainer">
+                        <div class="car-display-container">
 
                             <input type="checkbox" id="engineToggle" hidden>
 
                             <input type="checkbox" id="tyreToggle" hidden>
 
                             <img  
-                            id="mainCarImage"
-                            class="main-car-img "
-
-                            src="
-                            {% if first_car.model == 'EMAS 5' %}
-                            {{ url_for('static', filename='image/emas5transparent.png') }}
-
-                            {% elif first_car.model == 'EMAS 7' %}
-                            {{ url_for('static', filename='image/emas7transparent.png') }}
-
-                            {% else %}
-                            {{ url_for('static', filename='image/emasphevtransparent.png') }}
-                            {% endif %}
-                            ">
+                            class="main-car-img emas5-car" 
+                            src="{% static 'image/emas5transparent.png' %}">
                             
                             <img 
-                            id="engineImage"
-                            class="main-car-img engine-car"
-
-                            src="
-                            {% if first_car.model == 'EMAS 5' %}
-                            {{ url_for('static', filename='image/emas5engine1.png') }}
-
-                            {% elif first_car.model == 'EMAS 7' %}
-                            {{ url_for('static', filename='image/emas7engine1.png') }}
-
-                            {% else %}
-                            {{ url_for('static', filename='image/emasphevengine1.png') }}
-                            {% endif %}
-                            ">
+                            class="main-car-img engine-car" 
+                            src="{% static 'image/emas5engine1.png' %}">
 
                             <label for="engineToggle" class="engine-close">✕</label>
 
-                            <label for="tyreToggle" class="hotspot-dot tyre-hotspot"></label>
+                            <label for="tyreToggle" class="hotspot-dot hs-1"></label>
 
-                            <label for="engineToggle" class="hotspot-dot openengine-hotspot"></label>
+                            <label for="engineToggle" class="hotspot-dot hs-2"></label>
 
                             <!-- TYRE CARD -->
 
@@ -296,7 +262,7 @@
 
                                 <div class="progress-top">
 
-                                    <img src="{{ url_for('static', filename='image/tyreemas51.png') }}">
+                                    <img src="{% static 'image/tyreemas5.png' %}">
 
                                     <div class="status-circle">
                                         <span>90%</span>
@@ -323,7 +289,7 @@
 
                                 <div class="progress-top">
 
-                                    <img src="{{ url_for('static', filename='image/coolant.png') }}">
+                                    <img src="{% static 'image/engine1.png' %}">
 
                                     <div class="status-circle">
                                         <span>90%</span>
@@ -331,7 +297,7 @@
 
                                 </div>
 
-                                <p>The coolant fluid level is at 90%</p>
+                                <p>Engine system is running normally.</p>
 
                             </div>
 
@@ -347,7 +313,7 @@
 
                                 <div class="progress-top">
 
-                                    <img src="{{ url_for('static', filename='image/brakefluid.png') }}">
+                                    <img src="{% static 'image/battery.png' %}">
 
                                     <div class="status-circle">
                                         <span>88%</span>
@@ -355,7 +321,7 @@
 
                                 </div>
 
-                                <p>The brake fluid is in good condition 88%.</p>
+                                <p>Battery health is 88%.</p>
 
                             </div>
 
@@ -418,7 +384,7 @@
 
                                 <div class="battery-header">
                                     <span>Battery</span>
-                                    <span class="battery-percent">90%</span>
+                                    <span class="battery-percent">{{ selected_car.battery_percent|default:90 }}%</span>
                                 </div>
 
                                 <div class="battery-bar">
@@ -460,12 +426,12 @@
                     RIGHT PANEL
                 ========================= -->
 
-                {% set car = cars[0] if cars else None %}
+                
                 <section class="status-container-wrapper">
 
-                    {% set car = cars[0] if cars else None %}
+                    
 
-                    {% if car %}
+                    {% if selected_car %}
 
                     <div class="right-panel">
 
@@ -479,15 +445,19 @@
 
                                 <div class="car-dot-wrapper">
 
-                                    <div id="rightDot" class="car-dot"></div>
+                                    <div class="car-dot
+                                        {{ selected_car.dot_class }}">
 
+                                        {{ selected_car.dot_label }}
+
+                                    </div>
 
                                 </div>
 
                                     <!-- INFO -->
                                     <div class="car-info">
-                                        <h4>{{ car.nickname }}</h4>
-                                        <p>{{ car.year }} • {{ car.model }}</p>
+                                        <h4>{{ selected_car.nickname }}</h4>
+                                        <p>{{ selected_car.year }} • {{ selected_car.model }}</p>
                                     </div>
                             </div>
 
@@ -504,7 +474,7 @@
 
                                 <label for="component" class="component-btn">Car Element</label>
                                 
-                                <div class="mileage-form-mode">
+                                <form method="POST" action="{% url 'dashboard:vehicle' %}">{% csrf_token %}<div class="mileage-form-mode">
 
                                     <div class="dropdown">
                                             <input type="date" name="date-list" id="date-list" value="" />
@@ -533,14 +503,13 @@
                                         value="80">
                                     </div>
 
+                                    <input type="hidden" name="action" value="update_mileage">
+                                    <input type="hidden" name="car_id" value="{{ selected_car.id }}">
                                     <div class="action">
-                                        <button class="create-btn">Update</button>
+                                        <button class="create-btn" type="submit">Update</button>
                                     </div>
-
                                 </div>
-
-                                
-                                <div class="component-form-mode">
+                                </form><form method="POST" action="{% url 'dashboard:vehicle' %}">{% csrf_token %}<div class="component-form-mode">
 
                                     <div class="question">
                                         <label>1. Tyre Update</label>
@@ -614,24 +583,20 @@
 
                                     <input type="hidden" name="brake" id="currentbrake">
 
+                                    <input type="hidden" name="action" value="update_component">
+                                    <input type="hidden" name="car_id" value="{{ selected_car.id }}">
                                     <div class="action">
-                                        <button class="create-btn">Update</button>
+                                        <button class="create-btn" type="submit">Update</button>
                                     </div>
                                 </div>
-
-                            </div>
-
+                            </div></form>
                         </div>
-
-                        
-                        
                     </div>
 
 
                 </div>
 
                     {% endif %}
-                        
                 </section>
 
             </div>
@@ -641,19 +606,19 @@
                 <div class="footer-top">
 
                     <div class="logo">
-                        <img src="{{ url_for('static', filename='image/autocarexlogowhhite.png') }}"> 
+                        <img src="{% static 'image/autocarexlogowhhite.png' %}"> 
                     </div>
 
                     <nav class="footer-nav">
-                        <a href="{{ url_for('home') }}">Home</a>
+                        <a href="{% url 'dashboard:index' %}">Home</a>
 
-                        <a href="{{ url_for('vehicle') }}">Manage Car</a>
+                        <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
 
-                        <a href="{{ url_for('location') }}">Car Workshop</a>
+                        <a href="{% url 'dashboard:location' %}">Car Workshop</a>
 
-                        <a href="{{ url_for('upgrade') }}">Suggestion</a>
+                        <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
                         
-                        <li><a href="#">Profile</a></li>
+                        <a href="{% url 'dashboard:profile' %}">Profile</a>
                     </nav>
 
                 </div>
@@ -730,150 +695,6 @@
                 document.getElementById(inputID).value = value;  // update input
                 document.getElementById(listID).style.display = "none"; // close list
             }
-
-            let currentModel = "EMAS 5";
-
-            // ======================
-            // change car image
-            // ======================
-            const carItems = document.querySelectorAll(".car-item");
-
-            carItems.forEach(item => {
-                item.addEventListener("click", () => {
-
-                    const model = item.dataset.model;
-                    const name = item.dataset.name;
-                    const year = item.dataset.year;
-
-                    const mainImage = document.getElementById("mainCarImage");
-                    const engineImage = document.getElementById("engineImage");
-
-                    // itle
-                    document.getElementById("carTitle").innerText = `${name} (${year})`;
-                    document.getElementById("carModel").innerText = model;
-
-                    // ======================
-                    // image and status
-                    // ======================
-                    if (model === "EMAS 5") {
-                        currentModel = "EMAS 5";
-
-                        mainImage.src = "/static/image/emas5transparent.png";
-                        engineImage.src = "/static/image/emas5engine1.png";
-                    }
-                    else if (model === "EMAS 7") {
-                        currentModel = "EMAS 7";
-
-                        mainImage.src = "/static/image/emas7transparent.png";
-                        engineImage.src = "/static/image/emas7engine1.png";
-                    }
-                    else {
-                        currentModel = "PHEV";
-
-                        mainImage.src = "/static/image/emasphevtransparent.png";
-                        engineImage.src = "/static/image/emasphevengine1.png";
-                    }
-
-                    
-                    updateCarLayout();
-                });
-            });
-
-
-            // ======================
-            // 3. hotspot layout 
-            // ======================
-            function updateCarLayout() {
-
-                const container = document.getElementById("carContainer");
-
-                // remove old
-                container.classList.remove(
-                    "model-EMAS5",
-                    "model-EMAS7",
-                    "model-PHEV"
-                );
-
-                // add new class
-                if (currentModel === "EMAS 5") {
-                    container.classList.add("model-EMAS5");
-                }
-                else if (currentModel === "EMAS 7") {
-                    container.classList.add("model-EMAS7");
-                }
-                else {
-                    container.classList.add("model-PHEV");
-                }
-            }
-
-            // right dot update
-            function updateRightPanel(){
-
-                if(!currentCar) return;
-
-                const rightDot = document.getElementById("rightDot");
-
-                // reset
-                rightDot.classList.remove("dot-5","dot-7","dot-phev");
-
-                // dot + text
-                if (currentCar.model === "EMAS 5") {
-                    rightDot.classList.add("dot-5");
-                    rightDot.innerText = "e5";
-                }
-                else if (currentCar.model === "EMAS 7") {
-                    rightDot.classList.add("dot-7");
-                    rightDot.innerText = "e7";
-                }
-                else {
-                    rightDot.classList.add("dot-phev");
-                    rightDot.innerText = "PH";
-                }
-
-                document.querySelector(".car-profile-box h4").innerText = currentCar.name;
-                document.querySelector(".car-profile-box p").innerText =
-                    `${currentCar.year} • ${currentCar.model}`;
-            }
-
-            carItems.forEach(item => {  // like a main to control all the things when u click the car item
-                item.addEventListener("click", () => {
-
-                    const model = item.dataset.model;
-                    const name = item.dataset.name;
-                    const year = item.dataset.year;
-
-                    currentCar = { model, name, year };
-
-                    document.getElementById("carTitle").innerText = `${name} (${year})`;
-                    document.getElementById("carModel").innerText = model;
-
-                    updateCarLayout();
-                    updateRightPanel();
-                });
-            });
-
-
-            // init
-            window.onload = function () {  // auto select the first car
-                const first = document.querySelector(".car-item");
-
-                if (first) {
-                    first.querySelector("input").checked = true;
-                    first.click();
-                }
-            };
-
-            //window.onload
-            //    ↓
-            //first.click()
-            //    ↓
-            //car click handler
-            //    ↓
-            //currentCar = first car
-            //    ↓
-            //updateCarLayout()
-            //updateRightPanel()
-            //update title + image
 
         </script>
 

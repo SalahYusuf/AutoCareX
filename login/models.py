@@ -20,7 +20,7 @@ class EmailVerificationToken(models.Model):
     def create_for_user(cls, user):
         # Delete any existing token for this user first
         cls.objects.filter(user=user).delete()
-        token = secrets.token_urlsafe(32)
+        token = secrets.token_hex(32)
         return cls.objects.create(
             user=user,
             token=token,
