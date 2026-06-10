@@ -1,1 +1,20 @@
-.env
+
+# 屏蔽 Python 运行时产生的所有缓存垃圾
+**/__pycache__/
+*.pyc
+
+# 屏蔽 VS Code 自己的临时配置文件
+.vscode/
+
+# 屏蔽 Python 的虚拟环境（如果你的环境叫 venv 就写 venv/）
+.venv/
+venv/
+env/
+
+# 屏蔽本地数据库缓存
+*.db
+*.sqlite3
+# 拦截 Python 库打包和编译时产生的巨大垃圾文件夹
+build/
+dist/
+*.egg-info/
