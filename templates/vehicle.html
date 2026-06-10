@@ -23,13 +23,13 @@
 
                     <a href="{{ url_for('location') }}">Car Workshop</a>
 
-                    <a href="{{ url_for('upgrade') }}">Suggestion</a>
+                    <a href="{{ url_for('upgrade') }}">Contact us</a>
                     
                     <li><a href="#">Profile</a></li>
                 </ul>
 
                 <div class="nav-cta">
-                    <a href="#" class="btn-contact">Contact Us</a>
+                    <a href="#" class="btn-contact">Log Out</a>
                 </div>
             </nav>
 
@@ -47,12 +47,13 @@
 
                     <div class="user-tools">
 
-                        <div class="notification-badge">
-                            Car Service Notification ⌵
-                        </div>
+                        <button class="notification-text-btn" id="notiBtn">
+                            Notification 🔔
+                            <span class="red-dot" id="notiDot"></span>
+                        </button>
 
-                        <div class="icon-btn">
-                            🔔
+                        <div class="dropdown-noti" id="notiDropdown">
+                            <p>aaaa</p>
                         </div>
 
                     </div>
@@ -684,6 +685,27 @@
 
 
         <script>
+            document.addEventListener("DOMContentLoaded" ,() =>{
+                const notiBtn = document.getElementById("notiBtn")
+                const notiDropdown = document.getElementById("notiDropdown")
+                const notiDot = document.getElementById("notiDot")
+            })
+
+            /// show the notification dropdown and hide the red dot when click the notification button
+            notiBtn.addEventListener('click',(e) => {
+                const isExpanded = notiDropdown.classList.toggle('show');
+                if (isExpanded) {
+                    notiDot.style.display = 'none';
+                }
+            })
+
+            /// if click other side it will close the dropdown
+            document.addEventListener("click" ,(e) => {
+                if (!notiDropdown.contains(e.target) && e.target != notiBtn){
+                    notiDropdown.classList.remove("show");
+                }
+            })
+
 
             let currentCar = null;
             
