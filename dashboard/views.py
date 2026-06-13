@@ -1,4 +1,5 @@
 from datetime import date
+from django.utils import timezone
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -8,28 +9,82 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from ev_data.models import Vehicle, ServiceSchedule, MaintenanceLog
 
-# Default schedules applied when a new vehicle is added
-DEFAULT_SCHEDULES = [
-    {'component': 'battery',  'interval_km': 20000, 'interval_months': 12},
-    {'component': 'tyre',     'interval_km': 10000, 'interval_months': 6},
-    {'component': 'brake',    'interval_km': 20000, 'interval_months': 12},
-    {'component': 'coolant',  'interval_km': 40000, 'interval_months': 24},
-    {'component': 'general',  'interval_km': 10000, 'interval_months': 6},
-]
 
+# Default schedules applied when a new vehicle is added
+MAINTENANCE_RULES = {
+    "EMAS 5": {
+        "battery": {"check_km": 20000, "check_months": 12, "replace_km": 160000, "replace_months": 96},
+        "coolant": {"check_km": 20000, "check_months": 12, "replace_km": 80000, "replace_months": 60},
+        "gear_oil": {"check_km": 20000, "check_months": 12, "replace_km": 60000, "replace_months": 60},
+        "brake": {"check_km": 20000, "check_months": 12, "replace_km": 40000, "replace_months": 24},
+        "tyre": {"check_km": 10000, "check_months": 6, "replace_km": 50000, "replace_months": 48},
+    },
+
+    "EMAS 7": {
+        "battery": {"check_km": 20000, "check_months": 12, "replace_km": 160000, "replace_months": 96},
+        "coolant": {"check_km": 20000, "check_months": 12, "replace_km": 80000, "replace_months": 60},
+        "gear_oil": {"check_km": 20000, "check_months": 12, "replace_km": 40000, "replace_months": 48},
+        "brake": {"check_km": 20000, "check_months": 12, "replace_km": 40000, "replace_months": 24},
+        "tyre": {"check_km": 10000, "check_months": 6, "replace_km": 50000, "replace_months": 48},
+    },
+
+    "EMAS PHEV": {
+        "battery": {"check_km": 15000, "check_months": 12, "replace_km": 160000, "replace_months": 96},
+        "coolant": {"check_km": 15000, "check_months": 12, "replace_km": 60000, "replace_months": 60},
+        "gear_oil": {"check_km": 15000, "check_months": 12, "replace_km": 60000, "replace_months": 60},
+        "brake": {"check_km": 15000, "check_months": 12, "replace_km": 30000, "replace_months": 24},
+        "tyre": {"check_km": 10000, "check_months": 6, "replace_km": 50000, "replace_months": 48},
+    }
+}
+
+COMPONENT_UI = {
+    "coolant": {"label": "Coolant", "img": "image/coolant.png", "hotspot": "eh-1"},
+    "brake": {"label": "Brake", "img": "image/brakefluid.png", "hotspot": "eh-2"},
+    "battery": {"label": "Battery", "img": "image/battery.avif", "hotspot": "eh-3"},
+    "gear_oil": {"label": "Gear Oil", "img": "image/gear.jpg", "hotspot": "eh-4"},
+    "tyre": {"label": "Tyre", "img": "image/tyreemas5.png", "hotspot": "tyre"},
+}
 
 def _seed_schedules(vehicle):
-    """Create default service schedules for a newly added vehicle."""
-    for d in DEFAULT_SCHEDULES:
-        ServiceSchedule.objects.get_or_create(
-            vehicle=vehicle,
-            component=d['component'],
-            defaults={
-                'interval_km':     d['interval_km'],
-                'interval_months': d['interval_months'],
-            }
-        )
 
+    rules = MAINTENANCE_RULES.get(vehicle.model)
+
+    if not rules:
+        return
+
+    for component, rule in rules.items():
+
+        sched = ServiceSchedule.objects.get_or_create(
+            vehicle=vehicle,
+            component=component,
+            defaults={
+                "interval_km": rule["check_km"],
+                "interval_months": rule["check_months"],
+                "last_service_km": vehicle.mileage or 0,
+                "last_service_date": timezone.now().date(),
+            }
+        )[0]
+        
+        if sched.last_service_km is None:
+            sched.last_service_km = vehicle.mileage or 0
+
+        if sched.last_service_date is None:
+            sched.last_service_date = timezone.now().date()
+        
+        sched.compute_next_due()
+        sched.save()
+        
+def compute_status_percent(schedule, vehicle):
+    if not schedule.next_due_km:
+        return 100
+
+    used = vehicle.mileage - schedule.last_service_km
+    if schedule.interval_km == 0:
+        return 100
+
+    percent = 100 - (used / schedule.interval_km) * 100
+
+    return max(0, min(100, int(percent)))
 
 # ── Home ───────────────────────────────────────────────────────────────────────
 
@@ -82,9 +137,17 @@ def vehicle(request):
             ).delete()
 
         elif action == 'update_mileage':
-            car = get_object_or_404(Vehicle, id=request.POST.get('car_id'), owner=request.user)
-            car.mileage         = max(int(request.POST.get('mileage', 0)), car.mileage)
-            car.battery_percent = min(max(int(request.POST.get('battery_percent', 100)), 0), 100)
+            car = get_object_or_404(
+                Vehicle,
+                id=request.POST.get('car_id'),
+                owner=request.user
+            )
+            car.mileage = max(int(request.POST.get('mileage', 0)), car.mileage)
+            car.battery_percent = min(
+                max(int(request.POST.get('battery_percent', 100)), 0),
+                100
+            )
+            car.updated_at = timezone.now()
             car.save()
             messages.success(request, 'Vehicle updated.')
 
@@ -96,30 +159,107 @@ def vehicle(request):
 
     cars = Vehicle.objects.filter(owner=request.user)
 
+    selected_id = request.GET.get("car")
+
+    if selected_id:
+        selected_car = cars.filter(id=selected_id).first()
+    else:
+        selected_car = cars.first() if cars.exists() else None
+
+    if not selected_car:
+        return render(request, "vehicle.html", {
+            "cars": cars,
+            "car_count": cars.count(),
+            "selected_car": None,
+            "components": {},
+            "full_range": None,
+            "estimate_range": None,
+        })
+
     # attach images for all cars
     for car in cars:
         car.image = car.get_image()
         car.engine_image = car.get_engine_image()
 
-    selected_id = request.GET.get('car')
+    # AFTER selected_car is finalized
+    components_qs = ServiceSchedule.objects.filter(
+        vehicle=selected_car,
+        is_active=True
+    ) if selected_car else ServiceSchedule.objects.none()
 
-    selected_car = cars.filter(id=selected_id).first() if selected_id else None
+    if selected_car:
+        rules = MAINTENANCE_RULES.get(selected_car.model, {})
+    else:
+        rules = {}
 
-    # fallback FIRST (IMPORTANT)
-    if not selected_car and cars.exists():
-        selected_car = cars.first()
+    today = date.today()
+    age_months = max(0, (today.year - selected_car.year) * 12)
+
+    components = {}
+    for c in components_qs:
+        config = COMPONENT_UI.get(c.component, {})
+        rule = rules.get(c.component)
+
+        if not rule:
+            continue
+
+        km_ratio = selected_car.mileage / max(rule["replace_km"], 1)
+        mileage_percent = max(0, min(100, int(100 * (1 - km_ratio))))
+
+        time_ratio = age_months / max(rule["replace_months"], 1)
+        time_percent = max(0, min(100, int(100 * (1 - time_ratio))))
+
+        final_percent = int((mileage_percent + time_percent) / 2)
+
+        components[c.component] = {
+            "label": config.get("label", c.component),
+            "img": config.get("img", "image/default.png"),
+            "hotspot": config.get("hotspot", c.component),
+
+            "mileage_percent": mileage_percent,
+            "time_percent": time_percent,
+            "status_percent": final_percent,
+        }
+    for key, config in COMPONENT_UI.items():
+        if key not in components:
+            components[key] = {
+                "label": config["label"],
+                "img": config["img"],
+                "hotspot": config["hotspot"],
+                "status_percent": 100,
+                "mileage_percent": 100,
+                "time_percent": 100,
+            }
 
     # now safe to attach images
     if selected_car:
         selected_car.image = selected_car.get_image()
         selected_car.engine_image = selected_car.get_engine_image()
 
-    return render(request, 'vehicle.html', {
-        'cars':         cars,
-        'car_count':    cars.count(),
-        'selected_car': selected_car,
-    })
+        RANGE_MAP = {
+            "EMAS 5": 325,
+            "EMAS 7": 410,
+            "EMAS PHEV": 996,
+        }
 
+        full_range = RANGE_MAP.get(selected_car.model, 0)
+
+        estimate_range = round(
+            full_range * selected_car.battery_percent / 100
+        )
+
+    else:
+        full_range = None
+        estimate_range = None
+
+    return render(request, 'vehicle.html', {
+        'cars': cars,
+        'car_count': cars.count(),
+        'selected_car': selected_car,
+        'full_range': full_range,
+        'estimate_range': estimate_range,
+        'components': components,
+    })
 
 # ── Maintenance ────────────────────────────────────────────────────────────────
 

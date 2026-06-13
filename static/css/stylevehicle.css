@@ -291,6 +291,26 @@ body {
   padding-right:4px;
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%; 
+  min-height: 300px; 
+  text-align: center;
+  gap: 10px;
+}
+
+.empty-state-img {
+  width: 200px;
+  height: auto;
+  display: block; 
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
 /* =========================
    DOT BADGE
 ========================= */
@@ -844,55 +864,67 @@ body {
   content:"Gear";
 }
 
-/* EH1 */
-#eh1Toggle:checked ~ .card-1 {
+#tyreToggle:checked ~ .tyre {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+
+#eh1Toggle:checked ~ .eh-1 {
   opacity: 1;
 
   transform:
-    translateX(-80%)
-    translateY(60%)
     scale(1);
 
   pointer-events: all;
 }
 
-/* EH2 */
-#eh2Toggle:checked ~ .card-2 {
+#eh2Toggle:checked ~ .eh-2 {
   opacity: 1;
 
   transform:
-    translateX(45%)
-    translateY(-80%)
     scale(1);
 
   pointer-events: all;
 }
 
-/* EH3 */
-#eh3Toggle:checked ~ .card-3 {
+#eh3Toggle:checked ~ .eh-3 {
   opacity: 1;
 
   transform:
-    translateX(0%)
-    translateY(-80%)
     scale(1);
 
   pointer-events: all;
 }
 
-/* EH4 */
-#eh4Toggle:checked ~ .card-4 {
+#eh4Toggle:checked ~ .eh-4 {
   opacity: 1;
 
   transform:
-    translateX(50%)
-    translateY(70%)
     scale(1);
 
   pointer-events: all;
 }
 
+.engine-card.eh-1 {
+  top: 55%;
+  left: 5%;
+}
 
+.engine-card.eh-2 {
+  top: 10%;
+  right: 5%;
+}
+
+.engine-card.eh-3 {
+  top: 0%;
+  left: 35%;
+}
+
+.engine-card.eh-4 {
+  top:60%;
+  right: 10%;
+}
 
 /* =========================
    PREMIUM PROGRESS CARD
@@ -1162,20 +1194,20 @@ body {
   width: 100%;
   height: 14px;
   border-radius: 999px;
-
   background: rgba(15,23,42,0.10); 
   overflow: hidden;
   position: relative;
 }
 
 .battery-fill{
-  width: 90%;
   height: 100%;
-
   background: linear-gradient(90deg, #D7FF3F, #A6F000);
-
   box-shadow: 0 0 12px rgba(215,255,63,0.45);
   border-radius: 999px;
+}
+
+.empty-battery{
+  width:0;
 }
 
 /* =========================
@@ -2317,7 +2349,6 @@ input[type="radio"]:checked + .model-btn{
   flex-wrap: wrap;
   gap: 15px; 
   width: 100%;
-  max-width: 300px; 
 }
 
 .mileage-btn,.component-btn {
@@ -2367,12 +2398,25 @@ input[type="radio"]:checked + .model-btn{
   display: none;
 }
 
-#mileage:checked ~ .mileage-form-mode {
+
+#mileage:checked ~ .change-form .form-wrapper .mileage-form-mode {
   display: block;
 }
 
-#component:checked ~ .component-form-mode {
+#component:checked ~ .change-form .form-wrapper .component-form-mode {
   display: block;
+}
+
+.change-form-container #mileage:checked ~ .change-form .mileage-btn {
+  background:#111827;
+  color:white;
+  border:3px solid #111827;
+}
+
+.change-form-container #component:checked ~ .change-form .component-btn {
+  background:#111827;
+  color:white;
+  border:3px solid #111827;
 }
 
 /* =========================
@@ -2424,6 +2468,16 @@ input[type="radio"]:checked + .model-btn{
   box-shadow:0 0 0 4px rgba(223,242,71,0.18);
 }
 
+.form-wrapper {
+  width: 100%;
+}
+
+.last-updated {
+  font-size: 12px;
+  color: #9ca3af;  
+  margin-top: 4px;
+}
+
 /* =========================
   dropdown box
 ========================= */
@@ -2436,10 +2490,10 @@ input[type="radio"]:checked + .model-btn{
 }
 
 .dropdown-input {
+  margin-top: 5px;
   height: 52px;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-
   padding: 0 18px;
   display: flex;
   justify-content: space-between;  /* make the word away from down pic */
@@ -2447,8 +2501,6 @@ input[type="radio"]:checked + .model-btn{
   background: white;
   cursor: pointer;
   box-shadow:0 2px 5px rgba(0,0,0,0.03);
-
-
 }
 
 .dropdown-list {
@@ -2456,11 +2508,9 @@ input[type="radio"]:checked + .model-btn{
   top: 60px;
   left: 0px;
   width: 100%;
-
   background: white;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-
   display: none;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -2482,6 +2532,25 @@ input[type="radio"]:checked + .model-btn{
   font-weight:600;
   color:#1f2937;
   padding-left:4px;
+}
+
+.empty-form-message{
+  margin-top:20px;
+  padding:30px;
+  border-radius:16px;
+  background:#f4f4f4;
+  text-align:center;
+}
+
+.empty-form-message h3{
+  font-size:30px;
+  color:#111827;
+  margin-bottom:8px;
+}
+
+.empty-form-message p{
+  color:#6b7280;
+  font-size:16px;
 }
 
 /* =========================
@@ -2561,3 +2630,5 @@ input[type="radio"]:checked + .model-btn{
 footer {
   margin-top: 50px;
 }
+
+
