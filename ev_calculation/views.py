@@ -24,3 +24,13 @@ def calculator_view(request):
         }
 
     return render(request, "ev_calculation/calculator.html", {"result": result})
+
+from .services import get_all_maintenance_status
+
+maintenance_data = get_all_maintenance_status(
+    last_service_km=50000,
+    current_km=59000,
+    annual_km=20000,
+)
+
+print(maintenance_data)
