@@ -71,6 +71,9 @@ class Vehicle(models.Model):
 
 class ServiceSchedule(models.Model):
 
+    last_reset_date = models.DateField(null=True, blank=True)
+    last_reset_km = models.IntegerField(null=True, blank=True)
+
     COMPONENT_CHOICES = [
         ('battery', 'Battery'),
         ('coolant', 'Coolant'),
@@ -98,6 +101,19 @@ class ServiceSchedule(models.Model):
 
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # models.py
+
+    status_percent = models.IntegerField(default=100)
+
+    last_checked_km = models.IntegerField(
+    null=True,
+    blank=True
+)
+
+    last_checked_date = models.DateField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         ordering = ['component']
@@ -194,3 +210,28 @@ class MaintenanceLog(models.Model):
     def __str__(self):
         return f"{self.vehicle.nickname} — {self.component} on {self.service_date}"
 
+class Notification(models.Model):
+    LEVEL_CHOICES = [
+        ("normal", "Normal"),
+        ("urgent", "Urgent"),
+    ]
+
+    TYPE_CHOICES = [
+        ("maintenance", "Maintenance"),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+
+    component = models.CharField(max_length=20)
+    notification_type = models.CharField(max_length=30, choices=TYPE_CHOICES)
+
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    is_read = models.BooleanField(default=False)
+
+    s_resolved = models.BooleanField(default=False)
+     
+    cycle_marker = models.CharField(max_length=100)
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, default="normal")

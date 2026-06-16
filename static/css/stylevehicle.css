@@ -494,29 +494,6 @@ body {
 }
 
 
-.user-tools {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-left: auto;
-}
-
-.notification-badge {
-  background: var(--accent-yellow);
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .avatar {
   width: 32px;
   height: 32px;
@@ -849,7 +826,7 @@ body {
 }
 
 .eh-1::before{
-  content:"Coolant";
+  content:"Coolant Fluid";
 }
 
 .eh-2::before{
@@ -861,7 +838,7 @@ body {
 }
 
 .eh-4::before{
-  content:"Gear";
+  content:"Gear Oil";
 }
 
 #tyreToggle:checked ~ .tyre {
@@ -1065,13 +1042,11 @@ body {
     0 8px 20px rgba(15,23,42,0.10);
 }
 
-
 .status-circle {
   width: 58px;
   height: 58px;
 
   border-radius: 50%;
-
   position: relative;
 
   display: flex;
@@ -1080,12 +1055,23 @@ body {
 
   background:
     conic-gradient(
-      #D7FF3F 0% 82%,
-      rgba(255,255,255,0.45) 82% 100%
+      #D7FF3F 0 calc(var(--percent) * 1%),
+      rgba(255,255,255,0.45) calc(var(--percent) * 1%) 100%
     );
 
   box-shadow:
     0 0 20px rgba(215,255,63,0.28);
+}
+
+.status-circle.danger{
+  background:
+    conic-gradient(
+      #ff4d4d 0 calc(var(--percent) * 1%),
+      rgba(255,255,255,0.45) calc(var(--percent) * 1%) 100%
+    );
+
+  box-shadow:
+    0 0 20px rgba(255,77,77,0.35);
 }
 
 .status-circle::before {
@@ -1204,6 +1190,10 @@ body {
   background: linear-gradient(90deg, #D7FF3F, #A6F000);
   box-shadow: 0 0 12px rgba(215,255,63,0.45);
   border-radius: 999px;
+}
+
+.battery-fill.low-battery{
+    background:#ff4d4d;
 }
 
 .empty-battery{
@@ -2085,57 +2075,113 @@ input[type="radio"]:checked + .model-btn{
 ========================= */
 
 .user-tools{
-
   display:flex;
-
   align-items:center;
-
   gap:15px;
 }
 
+.notification-text-btn {
+  background-color: #d6ef39;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;     
+  pointer-events: auto; 
+  padding: 10px 20px;
+  position: relative;              
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  border: 2px solid #f9f8f8;
+  border-radius:12px;
+}
 
-.notification-badge{
+.notification-text-btn:hover {
+  color: #3182ce; 
+}
 
-  background:#E7F63B;
+.dropdown-noti {
+  position: absolute;
+  top: 50px;          
+  right: 0;
+  width: 340px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  display: none;      
+  z-index: 9999;    
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+}
 
-  padding:10px 18px;
+.dropdown-noti.show {
+  display: block;
+}
 
-  border-radius:14px;
+.noti-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+  gap: 10px;
+}
+
+.noti-item:hover {
+  background: #f9fafb;
+}
+
+.noti-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.noti-time {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.noti-text {
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.noti-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #9ca3af;
+  transition: 0.2s;
+}
+
+.noti-close:hover {
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+
+.noti-badge{
+  font-size:11px;
   font-weight:700;
-
-  font-size:13px;
-
-  color:#111827;
-
-  box-shadow:
-    0 8px 18px rgba(231,246,59,0.25);
+  padding:2px 8px;
+  border-radius:999px;
 }
 
-
-.icon-btn{
-
-  width:42px;
-  height:42px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  border-radius:14px;
-
-  background:white;
-
-  font-size:18px;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 4px 12px rgba(0,0,0,0.08);
+.noti-badge.urgent{
+  background:#fee2e2;
+  color:#dc2626;
 }
 
+.noti-badge.normal{
+  background:#dcfce7;
+  color:#16a34a;
+}
 
 /* =========================
    LEFT SIDEBAR
