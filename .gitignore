@@ -23,3 +23,11 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Local Django files
+db.sqlite3
+.env
