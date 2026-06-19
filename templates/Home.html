@@ -23,14 +23,12 @@
                     <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
 
                     <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-
-                    <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
                     
                     <a href="{% url 'dashboard:profile' %}">Profile</a>
                 </ul>
 
                 <div class="nav-cta">
-                    <a href="#" class="btn-contact">Contact Us</a>
+                    <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
                 </div>
             </nav>
 

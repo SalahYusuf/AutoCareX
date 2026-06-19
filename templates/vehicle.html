@@ -23,14 +23,12 @@
                     <a href="{% url 'dashboard:vehicle' %}" class="active">Manage Car</a>
 
                     <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-
-                    <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
                     
                     <a href="{% url 'dashboard:profile' %}">Profile</a>
                 </ul>
 
                 <div class="nav-cta">
-                    <a href="#" class="btn-contact">Contact Us</a>
+                    <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
                 </div>
             </nav>
 
@@ -42,21 +40,51 @@
 
             <div class="app-container">
 
-                {% if messages %}{% for message in messages %}<div style="background:{% if message.tags == 'error' %}#fff0f0;color:#c0392b{% else %}#f0fff4;color:#1a7a4a{% endif %};padding:10px 20px;border-radius:8px;margin:10px 20px;font-size:14px;">{{ message }}</div>{% endfor %}{% endif %}
-                <!-- TOP NOTIFICATION -->
-
                 <div class="top-notification">
 
                     <div class="user-tools">
 
-                        <div class="notification-badge">
-                            Car Service Notification ⌵
-                        </div>
+                        <button class="notification-text-btn" id="notiBtn">
+                            Car ServiceNotification 🔔
+                        </button>
 
-                        <div class="icon-btn">
-                            🔔
-                        </div>
+                        <div class="dropdown-noti" id="notiDropdown">
 
+                            {% for n in notifications %}
+
+                            <div class="noti-item">
+
+                                <div class="noti-content">
+
+                                    <div class="noti-header">
+
+                                        <span class="noti-time">
+                                            {{ n.created_at|date:"d M H:i" }}
+                                        </span>
+
+                                        <span class="noti-badge {{ n.level }}">
+                                            {{ n.level }}
+                                        </span>
+
+                                    </div>
+
+                                    <div class="noti-text">
+                                        {{ n.message }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            {% empty %}
+
+                            <div class="noti-item">
+                                No notification
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
                     </div>
 
                 </div>
@@ -83,7 +111,7 @@
                         {% if car_count == 0 %}
 
                         <div class="empty-state">
-                            <h2>No Cars Yet</h2>
+                            <img src="{% static 'image/empty.png' %}" alt="No Car" class="empty-state-img">
                         </div>
 
                         {% else %}
@@ -91,34 +119,25 @@
                         <div class="car-list">
 
                             {% for car in cars %}
+                            <a href="?car={{ car.id }}" style="text-decoration:none;">
+                                
+                                <div class="car-item {% if car.id == selected_car.id %}active{% endif %}">
+                                    
+                                    <div class="car-left">
 
-                            <a href="?car={{ car.id }}" style="text-decoration:none;"><label class="car-item" for="car{{ forloop.counter }}" style="cursor:pointer;">
+                                        <div class="car-dot {{ car.dot_class }} {% if car.id == selected_car.id %}active-dot{% endif %}">
+                                            {{ car.dot_label }}
+                                        </div>
 
-                                <input 
-                                type="radio" 
-                                id="car{{ forloop.counter }}"
-                                name="selected-car" 
-                                class="car-check">
+                                        <div class="car-info">
+                                            <h4>{{ car.nickname }}</h4>
+                                            <p>{{ car.year }} • {{ car.model }}</p>
+                                        </div>
 
-                                <div class="car-left">
-
-                                    <!-- DOT -->
-                                    <div class="car-dot
-                                        {{ selected_car.dot_class }}">
-
-                                        {{ selected_car.dot_label }}
-
-                                    </div>
-
-                                    <!-- INFO -->
-                                    <div class="car-info">
-                                        <h4>{{ selected_car.nickname }}</h4>
-                                        <p>{{ selected_car.year }} • {{ selected_car.model }}</p>
                                     </div>
 
                                 </div>
-
-                            </label></a>
+                            </a>
                             {% endfor %}
 
                         </div>
@@ -127,9 +146,19 @@
 
                     </div>
 
-                        <div class="action">
-                            <button class="create-btn">Create More</button>
-                        </div>
+                    <div class="action">
+
+                        <button class="create-btn" type="button">
+                            Create More
+                        </button>
+
+                        {% if car_count > 0 %}
+                        <button class="delete-btn" type="button" onclick="openDelete()">
+                            Delete Car
+                        </button>
+                        {% endif %}
+
+                    </div>
 
                         <!-- FORM MODE -->
 
@@ -159,9 +188,9 @@
                                     <input 
                                     type="number" 
                                     name="year" 
-                                    min="2020" 
+                                    min="2024" 
                                     max="2026" 
-                                    value="2022">
+                                    value="2024">
                                 </div>
 
                                 <div class="form-group">
@@ -219,7 +248,6 @@
 
                 </aside>
 
-
                 <!-- =========================
                     CENTER : CAR DISPLAY
                 ========================== -->
@@ -233,120 +261,181 @@
                             <p>{{ selected_car.year|default:"" }} • Proton {{ selected_car.model|default:"e.MAS" }}</p>
                         </div>
 
-                        <div class="car-display-container">
+                        <div class="car-display-container model-{{ selected_car.model|slugify }}">
+                            
+                            {% if selected_car %}
+
+                            <!-- ===================== -->
+                            <!-- TOGGLES -->
+                            <!-- ===================== -->
 
                             <input type="checkbox" id="engineToggle" hidden>
-
                             <input type="checkbox" id="tyreToggle" hidden>
 
-                            <img  
-                            class="main-car-img emas5-car" 
-                            src="{% static 'image/emas5transparent.png' %}">
-                            
-                            <img 
-                            class="main-car-img engine-car" 
-                            src="{% static 'image/emas5engine1.png' %}">
+                            <!-- ===================== -->
+                            <!-- CAR IMAGE -->
+                            <!-- ===================== -->
+
+                            <img class="main-car-img" src="{% static selected_car.image %}">
+                            <img class="engine-car" src="{% static selected_car.engine_image %}">
+
+                            <!-- ===================== -->
+                            <!-- HOTSPOTS (GLOBAL) -->
+                            <!-- ===================== -->
 
                             <label for="engineToggle" class="engine-close">✕</label>
+                            <label for="engineToggle" class="hotspot-dot openengine-hotspot"></label>
+                            <label for="tyreToggle" class="hotspot-dot tyre-hotspot"></label>
 
-                            <label for="tyreToggle" class="hotspot-dot hs-1"></label>
-
-                            <label for="engineToggle" class="hotspot-dot hs-2"></label>
-
+                            <!-- ===================== -->
                             <!-- TYRE CARD -->
+                            <!-- ===================== -->
 
                             <div class="progress-card">
 
                                 <label for="tyreToggle" class="close-btn">✕</label>
 
                                 <div class="progress-top">
-
                                     <img src="{% static 'image/tyreemas5.png' %}">
-
-                                    <div class="status-circle">
-                                        <span>90%</span>
+                                    <div class="status-circle
+                                        {% if components.tyre.status_percent <= 24 %}
+                                            danger
+                                        {% endif %}
+                                    "
+                                    style="--percent: {{ components.tyre.status_percent }}">
+                                        <span>{{ components.tyre.status_percent }}%</span>
                                     </div>
-
                                 </div>
 
                                 <p>
-                                    Tyre is currently in good condition (90%) 
-                                    and does not require replacement.
+                                    Tyre is currently at {{ components.tyre.status_percent}}% condition
                                 </p>
 
                             </div>
 
-                            <!-- ENGINE HOTSPOTS -->
+                            <!-- ===================== -->
+                            <!-- COOLANT (eh-1) -->
+                            <!-- ===================== -->
 
                             <input type="checkbox" id="eh1Toggle" hidden>
 
                             <label for="eh1Toggle" class="engine-hotspot eh-1"></label>
 
-                            <div class="engine-card card-1">
+                            <div class="engine-card eh-1">
 
                                 <label for="eh1Toggle" class="close-btn">✕</label>
 
                                 <div class="progress-top">
-
-                                    <img src="{% static 'image/engine1.png' %}">
-
-                                    <div class="status-circle">
-                                        <span>90%</span>
+                                    <img src="{% static components.coolant.img %}">
+                                    <div class="status-circle
+                                        {% if components.coolant.status_percent <= 24 %}
+                                            danger
+                                        {% endif %}
+                                    "
+                                    style="--percent: {{ components.coolant.status_percent }}">
+                                        <span>{{ components.coolant.status_percent}}%</span>
                                     </div>
-
                                 </div>
 
-                                <p>Engine system is running normally.</p>
+                                <p>
+                                    {{ components.coolant.label }} is at {{ components.coolant.status_percent}}%
+                                </p>
 
                             </div>
 
-                            <!-- CARD 2 -->
+                            <!-- ===================== -->
+                            <!-- BRAKE (eh-2) -->
+                            <!-- ===================== -->
 
                             <input type="checkbox" id="eh2Toggle" hidden>
 
                             <label for="eh2Toggle" class="engine-hotspot eh-2"></label>
 
-                            <div class="engine-card card-2">
+                            <div class="engine-card eh-2">
 
                                 <label for="eh2Toggle" class="close-btn">✕</label>
 
                                 <div class="progress-top">
-
-                                    <img src="{% static 'image/battery.png' %}">
-
-                                    <div class="status-circle">
-                                        <span>88%</span>
+                                    <img src="{% static components.brake.img %}">
+                                    <div class="status-circle
+                                        {% if components.brake.status_percent <= 25 %}
+                                        danger
+                                        {% endif %}
+                                        "
+                                        style="--percent: {{ components.brake.status_percent }}">
+                                        <span>{{ components.brake.status_percent}}%</span>
                                     </div>
-
                                 </div>
 
-                                <p>Battery health is 88%.</p>
+                                <p>
+                                    {{ components.brake.label }} is at {{ components.brake.status_percent}}%
+                                </p>
 
                             </div>
 
-                            <!-- CARD 3 -->
+                            <!-- ===================== -->
+                            <!-- BATTERY (eh-3) -->
+                            <!-- ===================== -->
 
                             <input type="checkbox" id="eh3Toggle" hidden>
 
                             <label for="eh3Toggle" class="engine-hotspot eh-3"></label>
 
-                            <div class="engine-card card-3">
+                            <div class="engine-card eh-3">
 
                                 <label for="eh3Toggle" class="close-btn">✕</label>
 
                                 <div class="progress-top">
-
-                                    <img src="{% static 'image/cooling.png' %}">
-
-                                    <div class="status-circle">
-                                        <span>80%</span>
+                                    <img src="{% static components.battery.img %}">
+                                    <div class="status-circle
+                                        {% if components.battery.status_percent <= 25 %}
+                                        danger
+                                        {% endif %}
+                                        "
+                                        style="--percent: {{ components.battery.status_percent }}">
+                                        <span>{{ components.battery.status_percent}}%</span>
                                     </div>
-
                                 </div>
 
-                                <p>Cooling system temperature is stable.</p>
+                                <p>
+                                    {{ components.battery.label }} is at {{ components.battery.status_percent}}%
+                                </p>
 
                             </div>
+
+                            <!-- ===================== -->
+                            <!-- GEAR OIL (eh-4) -->
+                            <!-- ===================== -->
+
+                            <input type="checkbox" id="eh4Toggle" hidden>
+
+                            <label for="eh4Toggle" class="engine-hotspot eh-4"></label>
+
+                            <div class="engine-card eh-4">
+
+                                <label for="eh4Toggle" class="close-btn">✕</label>
+
+                                <div class="progress-top">
+                                    <img src="{% static components.gear_oil.img %}">
+                                    <div class="status-circle" style="--percent: {{ components.gear_oil.status_percent }}">
+                                        <span>{{ components.gear_oil.status_percent}}%</span>
+                                    </div>
+                                </div>
+
+                                <p>
+                                    {{ components.gear_oil.label }} is at {{ components.gear_oil.status_percent}}%
+                                </p>
+
+                            </div>
+
+                            {% else %}
+
+                            <div class="no-car-state">
+                                <img src="{% static 'image/register-car.png' %}" class="no-car-img">
+                                <h2>Please register a car first</h2>
+                            </div>
+
+                            {% endif %}
 
                         </div>
 
@@ -358,11 +447,31 @@
 
                                 <div class="battery-header">
                                     <span>Battery</span>
-                                    <span class="battery-percent">{{ selected_car.battery_percent|default:90 }}%</span>
+                                    
+                                    {% if selected_car %}
+                    
+                                        <span class="battery-percent">{{ selected_car.battery_percent|default:90 }}%</span>
+                                    {% else %}
+
+                                        <span class="battery-percent">XXX</span>
+
+                                    {% endif %}
                                 </div>
 
                                 <div class="battery-bar">
-                                    <div class="battery-fill"></div>
+
+                                    {% if selected_car %}
+                                        <div class="battery-fill
+                                        {% if selected_car.battery_percent <= 24 %}
+                                        low-battery
+                                        {% endif %} 
+                                        "
+                                        style="width: {{ selected_car.battery_percent}}%;">
+                                        </div>
+                                    {% else %}
+                                        <div class="battery-fill empty-battery"></div>
+                                    {% endif %}
+
                                 </div>
 
                             </div>
@@ -374,17 +483,37 @@
                             <div class="bottom-stats">
 
                                 <div class="stat">
-                                    <span class="value">510 km</span>
+
+                                    <span class="value">
+                                        {% if selected_car %}
+                                            {{ estimate_range }} km
+                                        {% else %}
+                                            XXX
+                                        {% endif %}
+                                    </span>
+
                                     <span class="label">Estimate Range</span>
                                 </div>
 
                                 <div class="stat">
-                                    <span class="value">45000 km</span>
-                                    <span class="label">Total Milage</span>
+                                    <span class="value">
+                                        {% if selected_car %}
+                                            {{ selected_car.mileage }} km
+                                        {% else %}
+                                            XXX
+                                        {% endif %}
+                                    </span>
+                                    <span class="label">Total Mileage</span>
                                 </div>
 
                                 <div class="stat">
-                                    <span class="value">650 km</span>
+                                    <span class="value">
+                                        {% if selected_car %}
+                                            {{ full_range }} km
+                                        {% else %}
+                                            XXX
+                                        {% endif %}
+                                    </span>
                                     <span class="label">Estimate Range Full Charge</span>
                                 </div>
 
@@ -402,11 +531,6 @@
 
                 
                 <section class="status-container-wrapper">
-
-                    
-
-                    {% if selected_car %}
-
                     <div class="right-panel">
 
                         <div class="quick-update">
@@ -415,179 +539,310 @@
 
                         <div class="panel-header">
 
+                            {% if selected_car %}
+
                             <div class="car-profile-box">
 
                                 <div class="car-dot-wrapper">
-
-                                    <div class="car-dot
-                                        {{ selected_car.dot_class }}">
-
+                                    <div class="car-dot {{ selected_car.dot_class }}">
                                         {{ selected_car.dot_label }}
-
                                     </div>
+                                </div>
+
+                                <div class="car-info">
+                                    <h4>{{ selected_car.nickname }}</h4>
+                                    <p>{{ selected_car.year }} • {{ selected_car.model }}</p>
+                                    <div class="last-updated">
+                                        {% if selected_car.updated_at %}
+                                            Last updated: {{ selected_car.updated_at|date:"Y-m-d H:i" }}
+                                        {% else %}
+                                            No updated
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {% else %}
+
+                            <div class="car-profile-box">
+
+                                <div class="car-dot-wrapper">
+                                    <div class="car-dot">
+                                        🚗
+                                    </div>
+                                </div>
+
+                                <div class="car-info">
+                                    <h4>No Car Selected</h4>
+                                    <p>Please register a vehicle first</p>
 
                                 </div>
 
-                                    <!-- INFO -->
-                                    <div class="car-info">
-                                        <h4>{{ selected_car.nickname }}</h4>
-                                        <p>{{ selected_car.year }} • {{ selected_car.model }}</p>
-                                    </div>
                             </div>
+
+                            {% endif %}
 
                         </div>
 
                         <div class="change-form-container">
 
-                            <div class="change-form">
+                            <input type="radio" id="mileage" name="change-mode" hidden checked>
+                            <input type="radio" id="component" name="change-mode" hidden>
 
-                                <input type="radio" id="mileage" name="change-mode" hidden checked>
-                                <input type="radio" id="component" name="change-mode" hidden>
+                            <div class="change-form">    
 
                                 <label for="mileage" class="mileage-btn">Mileage</label>
-
                                 <label for="component" class="component-btn">Car Element</label>
-                                
-                                <form method="POST" action="{% url 'dashboard:vehicle' %}">{% csrf_token %}<div class="mileage-form-mode">
 
-                                    <div class="dropdown">
+                                <div class="form-wrapper">
 
-                                        <div class="dropdown-input" onclick="toggleDropdown('date-list',this)">
-                                            <span id="selected-Date">Select Date</span>
-                                            <span>⌵</span>
+                                <!-- mileage form -->
+
+                                    <form method="POST" action="{% url 'dashboard:vehicle' %}">
+                                        {% csrf_token %}
+
+                                        <div class="mileage-form-mode">
+
+                                            {% if selected_car %}
+
+                                            <!-- DATE -->
+
+                                            <div class="mileage-form">
+                                                <label>1. Please select date</label>
+                                                <input type="date"
+                                                    name="service_date"
+                                                    required>
+                                            </div>
+
+                                            <!-- MILEAGE -->
+                                            <div class="mileage-form">
+                                                <label>2. Increased driving range (km)</label>
+                                                <input type="number"
+                                                    name="mileage"
+                                                    placeholder="Please Enter Mileage"
+                                                    min="0"
+                                                    required>
+                                            </div>
+
+                                            <!-- BATTERY -->
+                                            <div class="mileage-form">
+                                                <label>3. Set the current battery (%)</label>
+                                                <input type="number"
+                                                    name="battery_percent"
+                                                    min="0"
+                                                    max="100"
+                                                    value="{{ selected_car.battery_percent|default:80 }}"
+                                                    required>
+                                            </div>
+
+                                            <!-- HIDDEN CONTROL -->
+                                            <input type="hidden" name="action" value="update_mileage">
+                                            <input type="hidden" name="car_id" value="{{ selected_car.id }}">
+
+                                            <!-- BUTTON -->
+                                            <div class="action">
+                                                <button type="submit" class="create-btn">Update</button>
+                                            </div>
+
+                                            {% else %}
+
+                                            <!-- EMPTY STATE -->
+                                            <div class="empty-form-message">
+                                                <h3>No Vehicle Found</h3>
+                                                <p>Please register a vehicle before updating mileage.</p>
+                                            </div>
+
+                                            {% endif %}
+
                                         </div>
 
-                                        <div class="dropdown-list" id="date-list">
-                                            <div class="dropdown-item" onclick="selectItem('12.5.2025','selected-Date','currentdate','date-list')">
-                                                12.5.2025
+                                    </form>
+
+                                    <!-- component form -->
+
+                                    <form method="POST" action="{% url 'dashboard:vehicle' %}">
+                                        {% csrf_token %}
+
+                                        <div class="component-form-mode">
+
+                                            <!-- ===================== TYRE ===================== -->
+                                            <div class="question">
+                                                <label>1. Tyre Status</label>
                                             </div>
-                                            <div class="dropdown-item" onclick="selectItem('13.5.2025','selected-Date','currentdate','date-list')">
-                                                13.5.2025
+
+                                            <div class="dropdown">
+                                                <div class="dropdown-input" onclick="toggleDropdown('tyre-list',this)">
+                                                    <span id="selected-tyre">Update current status</span>
+                                                    <span>⌵</span>
+                                                </div>
+
+                                                <div class="dropdown-list" id="tyre-list">
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('replacement','selected-tyre','currenttyre','tyre-list')">
+                                                        Replacement
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('checking','selected-tyre','currenttyre','tyre-list')">
+                                                        Checking
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('none','selected-tyre','currenttyre','tyre-list')">
+                                                        None
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="dropdown-item" onclick="selectItem('14.5.2025','selected-Date','currentdate','date-list')">
-                                                14.5.2025
+
+                                            <input type="hidden" name="tyre" id="currenttyre">
+
+
+                                            <!-- ===================== COOLANT ===================== -->
+                                            <div class="question">
+                                                <label>2. Coolant Fluid Status</label>
                                             </div>
+
+                                            <div class="dropdown">
+                                                <div class="dropdown-input" onclick="toggleDropdown('coolant-list',this)">
+                                                    <span id="selected-coolant">Update current status</span>
+                                                    <span>⌵</span>
+                                                </div>
+
+                                                <div class="dropdown-list" id="coolant-list">
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('replacement','selected-coolant','currentcoolant','coolant-list')">
+                                                        Replacement
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('checking','selected-coolant','currentcoolant','coolant-list')">
+                                                        Checking
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('none','selected-coolant','currentcoolant','coolant-list')">
+                                                        None
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input type="hidden" name="coolant" id="currentcoolant">
+
+
+                                            <!-- ===================== BRAKE ===================== -->
+                                            <div class="question">
+                                                <label>3. Brake Fluid Status</label>
+                                            </div>
+
+                                            <div class="dropdown">
+                                                <div class="dropdown-input" onclick="toggleDropdown('brake-list',this)">
+                                                    <span id="selected-brake">Update current status</span>
+                                                    <span>⌵</span>
+                                                </div>
+
+                                                <div class="dropdown-list" id="brake-list">
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('replacement','selected-brake','currentbrake','brake-list')">
+                                                        Replacement
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('checking','selected-brake','currentbrake','brake-list')">
+                                                        Checking
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('none','selected-brake','currentbrake','brake-list')">
+                                                        None
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input type="hidden" name="brake" id="currentbrake">
+
+
+                                            <!-- ===================== BATTERY ===================== -->
+                                            <div class="question">
+                                                <label>4. Battery Status</label>
+                                            </div>
+
+                                            <div class="dropdown">
+                                                <div class="dropdown-input" onclick="toggleDropdown('battery-list',this)">
+                                                    <span id="selected-battery">Update current status</span>
+                                                    <span>⌵</span>
+                                                </div>
+
+                                                <div class="dropdown-list" id="battery-list">
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('replacement','selected-battery','currentbattery','battery-list')">
+                                                        Replacement
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('checking','selected-battery','currentbattery','battery-list')">
+                                                        Checking
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('none','selected-battery','currentbattery','battery-list')">
+                                                        None
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input type="hidden" name="battery" id="currentbattery">
+
+
+                                            <!-- ===================== GEAR OIL ===================== -->
+                                            <div class="question">
+                                                <label>5. Gear Oil Status</label>
+                                            </div>
+
+                                            <div class="dropdown">
+                                                <div class="dropdown-input" onclick="toggleDropdown('gear-list',this)">
+                                                    <span id="selected-gear">Update current status</span>
+                                                    <span>⌵</span>
+                                                </div>
+
+                                                <div class="dropdown-list" id="gear-list">
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('replacement','selected-gear','currentgear','gear-list')">
+                                                        Replacement
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('checking','selected-gear','currentgear','gear-list')">
+                                                        Checking
+                                                    </div>
+
+                                                    <div class="dropdown-item"
+                                                        onclick="selectItem('none','selected-gear','currentgear','gear-list')">
+                                                        None
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input type="hidden" name="gear_oil" id="currentgear">
+
+
+                                            <!-- ===================== META ===================== -->
+                                            <input type="hidden" name="action" value="update_component">
+                                            <input type="hidden" name="car_id" value="{{ selected_car.id }}">
+
+                                            <div class="action">
+                                                <button type="submit" class="create-btn">Update</button>
+                                            </div>
+
                                         </div>
+                                    </form>
 
-                                    </div>
-
-                                    <input type="hidden" name="date" id="currentdate">
-
-                                    <div class="mileage-form">
-                                        <label>1. Increased driving range (km)</label>
-
-                                        <input 
-                                        type="number" 
-                                        name="mileage" 
-                                        placeholder="Please Enter Daily Car Mileage" 
-                                        required>
-                                    </div>
-
-                                    <div class="mileage-form">
-                                        <label>2.Set the current battery (%)</label>
-
-                                        <input 
-                                        type="number" 
-                                        name="year" 
-                                        min="0" 
-                                        max="100" 
-                                        value="80">
-                                    </div>
-
-                                    <input type="hidden" name="action" value="update_mileage">
-                                    <input type="hidden" name="car_id" value="{{ selected_car.id }}">
-                                    <div class="action">
-                                        <button class="create-btn" type="submit">Update</button>
-                                    </div>
                                 </div>
-                                </form><form method="POST" action="{% url 'dashboard:vehicle' %}">{% csrf_token %}<div class="component-form-mode">
+                            </div>
 
-                                    <div class="question">
-                                        <label>1. Tyre Update</label>
-                                    </div>
-                                    
-                                    <div class="dropdown">
-
-                                        <div class="dropdown-input" onclick="toggleDropdown('tyre-list',this)">
-                                            <span id="selected-tyre">Update current status</span>
-                                            <span>⌵</span>
-                                        </div>
-
-                                        <div class="dropdown-list" id="tyre-list">
-                                            <div class="dropdown-item" onclick="selectItem('service','selected-tyre','currenttyre','tyre-list')">
-                                                Service
-                                            </div>
-                                            <div class="dropdown-item" onclick="selectItem('unservice','selected-tyre','currenttyre','tyre-list')">
-                                                Unservice
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <input type="hidden" name="tyre" id="currenttyre">
-
-                                    <div class="dropdown">
-
-                                        <div class="question">
-                                            <label>2. Coolant Expansion</label>
-                                        </div>
-
-                                        <div class="dropdown-input" onclick="toggleDropdown('coolant-list',this)">
-                                            <span id="selected-coolant">Update current status</span>
-                                            <span>⌵</span>
-                                        </div>
-
-                                        <div class="dropdown-list" id="coolant-list">
-                                            <div class="dropdown-item" onclick="selectItem('service','selected-coolant','currentcoolant','coolant-list')">
-                                                Service
-                                            </div>
-                                            <div class="dropdown-item" onclick="selectItem('unservice','selected-coolant','currentcoolant','coolant-list')">
-                                                Unservice
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <input type="hidden" name="coolant" id="currentcoolant">
-
-                                    <div class="dropdown">
-
-                                        <div class="question">
-                                            <label>2. Brake Fluid</label>
-                                        </div>
-
-                                        <div class="dropdown-input" onclick="toggleDropdown('brake-list',this)">
-                                            <span id="selected-brake">Update current status</span>
-                                            <span>⌵</span>
-                                        </div>
-
-                                        <div class="dropdown-list" id="brake-list">
-                                            <div class="dropdown-item" onclick="selectItem('service','selected-brake','currentbrake','brake-list')">
-                                                Service
-                                            </div>
-                                            <div class="dropdown-item" onclick="selectItem('unservice','selected-brake','currentbrake','brake-list')">
-                                                Unservice
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <input type="hidden" name="brake" id="currentbrake">
-
-                                    <input type="hidden" name="action" value="update_component">
-                                    <input type="hidden" name="car_id" value="{{ selected_car.id }}">
-                                    <div class="action">
-                                        <button class="create-btn" type="submit">Update</button>
-                                    </div>
-                                </div>
-                            </div></form>
                         </div>
+
                     </div>
-
-
-                </div>
-
-                    {% endif %}
                 </section>
 
             </div>
@@ -636,17 +891,103 @@
                 </div>
             </footer>
 
-            
+            <div id="deleteOverlay" class="overlay hidden">
 
+                <div class="delete-modal">
 
+                    <h2>Delete Cars</h2>
+
+                    <form method="POST" action="{% url 'dashboard:vehicle' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_car">
+
+                        <div class="delete-list">
+
+                            {% for car in cars %}
+                            <label class="delete-item">
+
+                                <input type="checkbox" name="delete_ids" value="{{ car.id }}">
+
+                                <!-- 🔥 DOT + INFO (same as left panel) -->
+                                <div class="car-left">
+
+                                    <div class="car-dot {{ car.dot_class }}">
+                                        {{ car.dot_label }}
+                                    </div>
+
+                                    <div class="car-info">
+                                        <h4>{{ car.nickname }}</h4>
+                                        <p>{{ car.year }} • {{ car.model }}</p>
+                                    </div>
+
+                                </div>
+
+                            </label>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="button" onclick="closeDelete()" class="cancel-btn">
+                                Cancel
+                            </button>
+
+                            <button type="submit" class="danger-btn">
+                                Delete Selected
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
 
         <script>
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const notiBtn = document.getElementById("notiBtn");
+                const notiDropdown = document.getElementById("notiDropdown");
+                const notiDot = document.getElementById("notiDot");
+
+                notiBtn.addEventListener('click', (e) => {
+                    const isExpanded = notiDropdown.classList.toggle('show');
+
+                    if (isExpanded && notiDot) {
+                        notiDot.style.display = 'none';
+                    }
+
+                    e.stopPropagation();
+                });
+
+                document.addEventListener("click", (e) => {
+                    if (!notiDropdown.contains(e.target) && e.target !== notiBtn) {
+                        notiDropdown.classList.remove("show");
+                    }
+                });
+            });
+
             function switchToForm() {
                 document.getElementById("evcard").classList.add("form-active");
+                document.getElementById("deleteMode").style.display = "none";
             }
 
             function switchToView() {
                 document.getElementById("evcard").classList.remove("form-active");
+                document.getElementById("deleteMode").style.display = "none";
+            }
+
+            function switchToDelete() {
+                document.getElementById("evcard").classList.add("form-active");
+                document.getElementById("deleteMode").style.display = "block";
+            }
+
+            function openDelete() {
+                document.getElementById("deleteOverlay").classList.remove("hidden");
+            }
+
+            function closeDelete() {
+                document.getElementById("deleteOverlay").classList.add("hidden");
             }
 
             document.querySelector(".create-btn").addEventListener("click", switchToForm);
