@@ -380,7 +380,7 @@ def vehicle(request):
                     continue
 
                 # =========================
-                # 🔥 CORE LOGIC
+                # CORE LOGIC
                 # =========================
                 
                 if status == "replacement":
@@ -680,6 +680,25 @@ def service_history(request, vehicle_id):
 @login_required(login_url='/login/')
 def location(request):
     return render(request, 'location.html')
+
+
+# ── Contact ─────────────────────────────────────────────────────────────────────
+
+@login_required(login_url='/login/')
+def contact(request):
+    if request.method == 'POST':
+        messages.success(
+            request,
+            'Thank you! Your feedback has been submitted.',
+        )
+        return redirect('dashboard:contact')
+
+    return render(request, 'contact.html', {
+        'contact_email': 'support@autocarex.com',
+        'contact_phone': '+60 12-345 6789',
+        'contact_phone_link': '+60123456789',
+        'contact_address': 'Cyberjaya, Selangor',
+    })
 
 
 # ── Upgrade ────────────────────────────────────────────────────────────────────
