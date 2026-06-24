@@ -1,312 +1,293 @@
-{% load static %}
 <!DOCTYPE html>
+
 <html lang="en">
 
     <head>
-        <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
-        <title>AutoCareX - Profile</title>
-        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
-        <link rel="stylesheet" href="{% static 'css/trans.css' %}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-        <style>
-            .profile-wrapper {
-                min-height: 100vh;
-                padding: 120px 40px 80px;
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                gap: 40px;
-                flex-wrap: wrap;
-                background: #f9f9f9;
-            }
+        <link rel="icon" href="static/image/autocarexlogoblack.png">
+        <title>AutoCareX - Home</title>
 
-            .profile-card {
-                background: #fff;
-                border-radius: 20px;
-                padding: 40px;
-                width: 100%;
-                max-width: 480px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            }
-
-            .profile-card h2 {
-                font-size: 28px;
-                font-weight: 700;
-                color: rgb(90, 88, 137);
-                margin-bottom: 8px;
-                font-family: 'Segoe UI', sans-serif;
-            }
-
-            .profile-card .sub {
-                font-size: 14px;
-                color: #888;
-                margin-bottom: 32px;
-                font-family: serif;
-            }
-
-            .avatar-circle {
-                width: 80px;
-                height: 80px;
-                border-radius: 50%;
-                background: rgb(90, 88, 137);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 32px;
-                font-weight: 700;
-                color: #fff;
-                margin-bottom: 24px;
-                font-family: 'Segoe UI', sans-serif;
-            }
-
-            .form-group {
-                margin-bottom: 28px;
-            }
-
-            .form-group label {
-                display: block;
-                font-size: 18px;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                margin-bottom: 6px;
-                color: #222;
-            }
-
-            .form-group input {
-                width: 85%;
-                border: none;
-                border-bottom: 2px solid grey;
-                outline: none;
-                font-size: 16px;
-                padding: 6px 0;
-                background: transparent;
-                font-family: 'Segoe UI', sans-serif;
-                color: #333;
-            }
-
-            .form-group input::placeholder {
-                color: rgb(155, 151, 147);
-                font-style: italic;
-                opacity: 0.5;
-            }
-
-            .form-group input:focus::placeholder {
-                color: transparent;
-            }
-
-            .profile-btn {
-                background-color: rgb(245, 188, 56);
-                color: black;
-                padding: 12px 30px;
-                border: none;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                width: 60%;
-                height: 50px;
-                position: relative;
-                overflow: hidden;
-                font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-                margin-top: 16px;
-            }
-
-            .profile-btn span {
-                position: relative;
-                z-index: 5;
-                color: black;
-                transition: color 0.4s ease;
-            }
-
-            .profile-btn::before {
-                content: "";
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                background-color: black;
-                top: 0;
-                left: -100%;
-                z-index: 1;
-                transition: left 0.4s ease;
-            }
-
-            .profile-btn:hover::before { left: 0; }
-            .profile-btn:hover span { color: white; }
-
-            .messages-box {
-                margin-bottom: 20px;
-            }
-
-            .msg {
-                padding: 10px 14px;
-                border-radius: 8px;
-                font-size: 14px;
-                margin-bottom: 8px;
-                font-family: 'Segoe UI', sans-serif;
-            }
-
-            .msg-error   { background: #fff0f0; color: #c0392b; border: 1px solid #f5c6c6; }
-            .msg-success { background: #f0fff4; color: #1a7a4a; border: 1px solid #b7e4c7; }
-
-            .logout-link {
-                display: inline-block;
-                margin-top: 20px;
-                font-size: 14px;
-                color: #c0392b;
-                font-family: 'Arial Black';
-                font-weight: bold;
-                text-decoration: none;
-                cursor: pointer;
-            }
-
-            .logout-link:hover { text-decoration: underline; }
-
-            .divider {
-                border: none;
-                border-top: 1px solid #eee;
-                margin: 32px 0;
-            }
-        </style>
+        <link rel="stylesheet" href="static/css/styleProfile.css">
+        <link rel="stylesheet" href="static/css/trans.css">
     </head>
 
     <body>
 
-        <div class="page-overlay"></div>
+        <input type="checkbox" id="modal-toggle" hidden>
+        <input type="checkbox" id="delete-toggle" hidden>
+        <input type="checkbox" id="switch-toggle" hidden>
+        
+        <nav class="floating-nav">
+            <div class="logo-area">
+                <img src="static/image/autocarexlogowhhite.png" class="nav-logo-img">
+            </div>
 
-        <div class="page-content">
+            <ul class="nav-links">
+                <a href="{% url 'dashboard:index' %}">Home</a>
 
-            <nav class="floating-nav">
-                <div class="logo-area">
-                    <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img">
-                </div>
+                <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
 
-                <ul class="nav-links">
-                    <a href="{% url 'dashboard:index' %}">Home</a>
-                    <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
-                    <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-                    <a href="{% url 'dashboard:profile' %}" class="active">Profile</a>
-                </ul>
+                <a href="{% url 'dashboard:location' %}">Car Workshop</a>
 
-                <div class="nav-cta">
-                    <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
-                </div>
-            </nav>
+                <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
+                
+                <a href="{% url 'dashboard:profile' %}" class="active">Profile</a>
+            </ul>
 
-            <div class="profile-wrapper">
+            <div class="nav-cta">
+                <a href="#" class="btn-contact">Contact Us</a>
+            </div>
+        </nav>
 
-                <!-- ACCOUNT INFO CARD -->
-                <div class="profile-card">
+        <div class="profile-container">
 
-                    <div class="avatar-circle">
-                        {{ request.user.username|first|upper }}
-                    </div>
+            <div class="banner-section">
 
-                    <h2>Account Info</h2>
-                    <p class="sub">Update your username or email address.</p>
-
-                    {% if messages %}
-                    <div class="messages-box">
-                        {% for message in messages %}
-                        <div class="msg {% if message.tags == 'error' %}msg-error{% else %}msg-success{% endif %}">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="update_info">
-
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" name="username" value="{{ request.user.username }}" placeholder="Enter username">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" name="email" value="{{ request.user.email }}" placeholder="Enter email">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Member Since</label>
-                            <input type="text" value="{{ request.user.date_joined|date:'d M Y' }}" disabled style="color:#aaa;">
-                        </div>
-
-                        <button type="submit" class="profile-btn"><span>Save Changes</span></button>
-                    </form>
-
-                    <hr class="divider">
-
-                    <a href="{% url 'login:logout' %}" class="logout-link">Logout from AutoCareX →</a>
-
-                </div>
-
-                <!-- CHANGE PASSWORD CARD -->
-                <div class="profile-card">
-
-                    <div class="avatar-circle" style="background: #1a1a2e;">
-                        <i class="fa fa-lock" style="font-size:30px;"></i>
-                    </div>
-
-                    <h2>Change Password</h2>
-                    <p class="sub">Keep your account secure with a strong password.</p>
-
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="change_password">
-
-                        <div class="form-group">
-                            <label>Current Password</label>
-                            <input type="password" name="current_password" placeholder="Enter current password">
-                        </div>
-
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" name="new_password" placeholder="Min 8 characters">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Confirm New Password</label>
-                            <input type="password" name="confirm_password" placeholder="Repeat new password">
-                        </div>
-
-                        <button type="submit" class="profile-btn"><span>Update Password</span></button>
-                    </form>
-
-                </div>
+                <nav class="top-nav">
+                    <a class="nav-tab active">Profile</a>
+                    <label for="modal-toggle" class="nav-tab" id="openChangeModal">Change Password</label>
+                    <label for="delete-toggle" class="nav-tab" >Delete Account</label>
+                    <label for="switch-toggle" class="nav-tab" >Switch Account</label>
+                </nav>
 
             </div>
 
-            <footer class="footer-container">
-                <div class="footer-top">
-                    <div class="logo">
-                        <img src="{% static 'image/autocarexlogowhhite.png' %}">
-                    </div>
-                    <nav class="footer-nav">
-                        <a href="{% url 'dashboard:index' %}">Home</a>
-                        <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
-                        <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-                        <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
-                        <a href="{% url 'dashboard:profile' %}">Profile</a>
-                    </nav>
-                </div>
-                <hr class="footer-divider">
-                <div class="footer-bottom">
-                    <div class="footer-email">Email Example@Gmail.com</div>
-                    <div class="footer-socials">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-x-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                    <div class="footer-copyright">Copyright © 2026 Brand | All Rights Reserved</div>
-                </div>
-            </footer>
+            <div class="profile-grid">
 
+                <aside class="sidebar">
+
+                    <label class="photo-container" for="photo-toggle">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="User Avatar" class="photo" id="profile-pic">
+                        <div class="image-content">
+                            <p>Change Picture</p>
+                        </div>
+                    </label>
+
+                    <input type="checkbox" id="photo-toggle">
+
+                    <div class="photo-overlay">
+
+                        <div class="photo-box">
+                            <label for="photo-toggle" class="close-x-btn">&times;</label>
+                            
+                            <div class="upload-container">
+                                <input type="file" id="file-upload" class="file-input" accept="image/png, image/jpeg, image/jpg" />
+                                
+                                <label for="file-upload" class="upload-box">
+                                    <div class="icon-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    </div>
+                                    
+                                    <span class="upload-btn">Upload An Image</span>
+                                    <p class="upload-text">Supports PNG, JPEG, and JPG</p>
+                                </label>
+                            </div>
+                        </div>
+                            
+                    </div>
+
+                    <h2 class="user-name">Blablabla</h2>
+                    <div class="user-role">Proton Emas User</div>
+
+                    <div class="car-box">
+                        <div class="car-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
+                                <circle cx="7" cy="17" r="2"></circle>
+                                <path d="M9 17h6"></path>
+                                <circle cx="17" cy="17" r="2"></circle>
+                            </svg>
+                        </div>
+
+                        <div class="car-count">5</div>
+                        <div class="car-label">Car Registered</div>
+                    </div>
+
+                    <div class="registration-date">Account Registered : 12 Jan 2026</div>
+                </aside>
+
+                <main class="main-form">
+
+                    <div class="form-group">
+                        <label>Username</label>
+                        <div class="field">
+                            <input type="text" value="Blalalalal" readonly>
+                            <button class="edit-btn">✏️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="field">
+                            <input type="email" class="unchangeable" value="balabal@gmail.com" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>About Me</label>
+                        <div class="field">
+                            <textarea readonly>balabalababddlhdlahdlhslhslhdlshlhdlhslhsalhasl</textarea>
+                            <button class="edit-btn">✏️</button>
+                        </div>
+                    </div>
+
+                </main>
+
+            </div>
+        
         </div>
 
-        <script src="{% static 'js/script.js' %}"></script>
+        <div class="modal-overlay">
+
+            <div class="modal-box">
+                <label for="modal-toggle" class="close-x-btn">&times;</label>
+
+                <div class="modal-header-container">
+                    <div class="lock-icon">🔒</div>
+                    <div class="modal-title">
+                        <h3>Change Password</h3>
+                        <p>Enter your password below</p>
+                    </div>
+                </div>
+
+                <form onsubmit="event.preventDefault();">
+
+                    <div class="modal-group">
+                        <label>New Password</label>
+                        <div class="password-input-field">
+                            <input type="password" id="newPassword" placeholder="Enter new password">
+                            <span class="eye-toggle-icon">👁</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-group">
+                        <label>Confirm Password</label>
+                        <div class="password-input-field">
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                            <span class="eye-toggle-icon">👁</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-pw-btn">Reset Password</button>
+
+
+
+                </form>
+
+            </div>
+        </div>
+
+        <div class="delete-overlay">
+
+            <div class="delete-box">
+                <label for="delete-toggle" class="close-x-btn">&times;</label>
+                
+                <div class="delete-header">
+                    <div class="icon-badge-danger">⚠️</div>
+                    <div class="modal-title">
+                        <h3>Delete Account</h3>
+                        <p>This action cannot be undone</p>
+                    </div>
+                </div>
+
+                <div class="delete-hint-text">
+                    Are you sure you want to delete your account? All of your registered car profile data, personal history, and settings will be permanently removed from Proton Emas.
+                </div>
+
+                <div class="delete-actions">
+                    <label for="delete-toggle" class="btn-cancel">Cancel</label>
+                    
+                    <button type="button" class="btn-delete-submit">Delete Permanently</button>
+                </div>
+            </div>
+                
+        </div>
+
+        <div class="switch-overlay">
+
+            <div class="switch-box">
+                <label for="switch-toggle" class="close-x-btn">&times;</label>
+                
+                <div class="switch-header">
+                    <div class="icon-badge-switch">🔀</div>
+                    <div class="modal-title">
+                        <h3>Switch Account</h3>
+                        <p>You are about to switch to another account</p>
+                    </div>
+                </div>
+
+                <div class="delete-hint-text">
+                    Are you sure you want to switch accounts? Your current session will be logged out, and you will need to sign in again to access another account in Proton Emas.
+                </div>
+
+                <div class="switch-actions">
+                    <label for="switch-toggle" class="btn-cancel">Cancel</label>
+                    
+                    <button type="button" class="btn-switch-submit">Switch Account</button>
+                </div>
+            </div>
+                
+        </div>
+
+
+        <script>
+            document.querySelectorAll(".form-group").forEach(group => {
+                const field = group.querySelector("input, textarea");
+                const btn = group.querySelector(".edit-btn");
+
+                if (btn) {
+                    btn.addEventListener("click", () => {
+                        field.removeAttribute("readonly");
+                        field.focus();
+                        
+                        // move the I to the last word
+                        const valLength = field.value.length;
+                        field.setSelectionRange(valLength, valLength);
+                    });
+                }
+
+                if (field) {
+                    field.addEventListener("blur", () => {
+                        field.setAttribute("readonly", true);
+                    });
+
+                    // save
+                    if (field.tagName === 'INPUT' && !field.classList.contains('unchangeable')) {
+                        field.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                field.blur(); 
+                            }
+                        });
+                    }
+                }
+            });
+
+            document.querySelectorAll(".eye-toggle-icon").forEach(eye =>{
+                eye.addEventListener("click",() => {
+                    const inputField = eye.previousElementSibling;
+                    if (inputField.type === "password") {
+                        inputField.type = "text";
+                        eye.style.color ="#111"
+                    } else {
+                        inputField.type = "password";
+                        eye.style.color = "#6c757d"
+                    }
+                });
+            });
+
+            let profilePic = document.getElementById("profile-pic")
+            let fileUpload = document.getElementById("file-upload")
+
+            fileUpload.onchange = function (){
+                profilePic.src = URL.createObjectURL(fileUpload.files[0])
+            }
+
+        </script>
 
     </body>
+
 
 </html>

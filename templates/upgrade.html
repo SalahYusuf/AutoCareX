@@ -6,7 +6,7 @@
         <link rel="icon" type="image/png" sizes="96x96" href="{% static 'image/autocarexlogoblack.png' %}"> 
         <title>AutoCareX - Suggestion</title>
 
-        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
+        <link rel="stylesheet" href="{% static 'css/styleHomeUpgrade.css' %}">
         <link rel="stylesheet" href="{% static 'css/trans.css' %}">
 
     </head>
@@ -453,9 +453,13 @@
 
                             <nav class="footer-nav">
                             <a href="{% url 'dashboard:index' %}">Home</a>
+
                             <a href="{% url 'dashboard:vehicle' %}">Own Vehicle</a>
+
                             <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-                            <a href="{% url 'dashboard:upgrade' %}">Upgrade</a>
+
+                            <a href="{% url 'dashboard:contact' %}">Contact Page</a>
+
                             <a href="{% url 'dashboard:profile' %}">Profile</a>
                             </nav>
 
