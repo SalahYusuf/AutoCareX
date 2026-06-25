@@ -13,6 +13,7 @@ import csv
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from login.models import UserProfile
 
 
 # Default schedules applied when a new vehicle is added
@@ -729,45 +730,154 @@ def upgrade(request):
 
 # ── Profile ────────────────────────────────────────────────────────────────────
 
-@login_required(login_url='/login/')
-def profile(request):
-    if request.method == 'POST':
-        action = request.POST.get('action')
+#
+# @login_required(login_url='/login/')
+# def profile(request):
+#     if request.method == 'POST':
+#         action = request.POST.get('action')
 
-        if action == 'update_info':
-            new_username = request.POST.get('username', '').strip()
-            new_email    = request.POST.get('email', '').strip().lower()
+#         if action == 'update_info':
+#             new_username = request.POST.get('username', '').strip()
+#             new_email    = request.POST.get('email', '').strip().lower()
+#             if new_username and new_username != request.user.username:
+#                 if User.objects.filter(username__iexact=new_username).exclude(pk=request.user.pk).exists():
+#                     messages.error(request, 'That username is already taken.')
+#                 else:
+#                     request.user.username = new_username
+#                     request.user.save()
+#                     messages.success(request, 'Username updated.')
+#             if new_email and new_email != request.user.email:
+#                 if User.objects.filter(email__iexact=new_email).exclude(pk=request.user.pk).exists():
+#                     messages.error(request, 'That email is already in use.')
+#                 else:
+#                     request.user.email = new_email
+#                     request.user.save()
+#                     messages.success(request, 'Email updated.')
+
+#         elif action == 'change_password':
+#             current = request.POST.get('current_password', '')
+#             new_pw  = request.POST.get('new_password', '')
+#             confirm = request.POST.get('confirm_password', '')
+#             if not request.user.check_password(current):
+#                 messages.error(request, 'Current password is incorrect.')
+#             elif len(new_pw) < 8:
+#                 messages.error(request, 'New password must be at least 8 characters.')
+#             elif new_pw != confirm:
+#                 messages.error(request, 'New passwords do not match.')
+#             else:
+#                 request.user.set_password(new_pw)
+#                 request.user.save()
+#                 update_session_auth_hash(request, request.user)
+#                 messages.success(request, 'Password changed successfully.')
+
+#         return redirect('dashboard:profile')
+
+#     return render(request, "profile.html", {
+#         "car_count": Vehicle.objects.filter(
+#             owner=request.user
+#         ).count(),
+#     })
+
+'''
+i just found out i can do this lol instead of cmd + / but still nice shortcut 
+'''
+
+@login_required(login_url="/login/")
+def profile(request):
+    user_profile, _ = UserProfile.objects.get_or_create(
+        user=request.user
+    )
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "update_info":
+            new_username = request.POST.get(
+                "username",
+                "",
+            ).strip()
+
+            new_email = request.POST.get(
+                "email",
+                "",
+            ).strip().lower()
+
+            about_me = request.POST.get(
+                "about_me",
+                "",
+            ).strip()
+
             if new_username and new_username != request.user.username:
-                if User.objects.filter(username__iexact=new_username).exclude(pk=request.user.pk).exists():
-                    messages.error(request, 'That username is already taken.')
+                if User.objects.filter(
+                    username__iexact=new_username
+                ).exclude(pk=request.user.pk).exists():
+                    messages.error(
+                        request,
+                        "That username is already taken.",
+                    )
                 else:
                     request.user.username = new_username
                     request.user.save()
-                    messages.success(request, 'Username updated.')
+
             if new_email and new_email != request.user.email:
-                if User.objects.filter(email__iexact=new_email).exclude(pk=request.user.pk).exists():
-                    messages.error(request, 'That email is already in use.')
+                if User.objects.filter(
+                    email__iexact=new_email
+                ).exclude(pk=request.user.pk).exists():
+                    messages.error(
+                        request,
+                        "That email is already in use.",
+                    )
                 else:
                     request.user.email = new_email
                     request.user.save()
-                    messages.success(request, 'Email updated.')
 
-        elif action == 'change_password':
-            current = request.POST.get('current_password', '')
-            new_pw  = request.POST.get('new_password', '')
-            confirm = request.POST.get('confirm_password', '')
+            user_profile.about_me = about_me
+            user_profile.save()
+
+            messages.success(
+                request,
+                "Profile saved successfully.",
+            )
+
+        elif action == "change_password":
+            current = request.POST.get("current_password", "")
+            new_pw = request.POST.get("new_password", "")
+            confirm = request.POST.get("confirm_password", "")
+
             if not request.user.check_password(current):
-                messages.error(request, 'Current password is incorrect.')
+                messages.error(
+                    request,
+                    "Current password is incorrect.",
+                )
             elif len(new_pw) < 8:
-                messages.error(request, 'New password must be at least 8 characters.')
+                messages.error(
+                    request,
+                    "New password must be at least 8 characters.",
+                )
             elif new_pw != confirm:
-                messages.error(request, 'New passwords do not match.')
+                messages.error(
+                    request,
+                    "New passwords do not match.",
+                )
             else:
                 request.user.set_password(new_pw)
                 request.user.save()
-                update_session_auth_hash(request, request.user)
-                messages.success(request, 'Password changed successfully.')
 
-        return redirect('dashboard:profile')
+                update_session_auth_hash(
+                    request,
+                    request.user,
+                )
 
-    return render(request, 'profile.html')
+                messages.success(
+                    request,
+                    "Password changed successfully.",
+                )
+
+        return redirect("dashboard:profile")
+
+    return render(request, "profile.html", {
+        "car_count": Vehicle.objects.filter(
+            owner=request.user
+        ).count(),
+        "user_profile": user_profile,
+    })

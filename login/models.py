@@ -32,3 +32,21 @@ class EmailVerificationToken(models.Model):
 
     def __str__(self):
         return f"Verification token for {self.user.username}"
+
+
+
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="account_profile",
+    )
+    about_me = models.TextField(
+        blank=True,
+        max_length=500,
+    )
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"

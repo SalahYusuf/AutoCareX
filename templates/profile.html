@@ -90,7 +90,7 @@
                             
                     </div>
 
-                    <h2 class="user-name">Blablabla</h2>
+                    <h2 class="user-name">{{ request.user.username }}</h2>
                     <div class="user-role">Proton Emas User</div>
 
                     <div class="car-box">
@@ -103,40 +103,58 @@
                             </svg>
                         </div>
 
-                        <div class="car-count">5</div>
+                        <div class="car-count">{{ car_count }}</div>
                         <div class="car-label">Car Registered</div>
                     </div>
 
-                    <div class="registration-date">Account Registered : 12 Jan 2026</div>
+                    <div class="registration-date">
+                        Account Registered: {{ request.user.date_joined|date:"d M Y" }}
+                    </div>
                 </aside>
 
-                <main class="main-form">
+                <!--<main class="main-form">-->
+
+                <form method="POST" class="main-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_info">
 
                     <div class="form-group">
                         <label>Username</label>
                         <div class="field">
-                            <input type="text" value="Blalalalal" readonly>
-                            <button class="edit-btn">✏️</button>
+                            <input type="text" name="username" value="{{ request.user.username }}" readonly>
+                            <button type="button" class="edit-btn">✏️</button>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Email Address</label>
                         <div class="field">
-                            <input type="email" class="unchangeable" value="balabal@gmail.com" readonly>
+                            <input type="email" name="email" class="unchangeable" value="{{ request.user.email }}" readonly>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>About Me</label>
                         <div class="field">
-                            <textarea readonly>balabalababddlhdlahdlhslhslhdlshlhdlhslhsalhasl</textarea>
-                            <button class="edit-btn">✏️</button>
+                            <textarea
+                                name="about_me"
+                                maxlength="500"
+                                placeholder="Write something about yourself..."
+                                readonly
+                            >{{ user_profile.about_me }}</textarea>
+
+                            <button type="button" class="edit-btn">✏️</button>
                         </div>
                     </div>
 
-                </main>
+                    <button type="submit" class="submit-pw-btn">
+                        Save Changes
+                    </button>
 
+                </form>
+
+                <!-- </main> -->
+                
             </div>
         
         </div>
@@ -244,7 +262,6 @@
                         field.removeAttribute("readonly");
                         field.focus();
                         
-                        // move the I to the last word
                         const valLength = field.value.length;
                         field.setSelectionRange(valLength, valLength);
                     });
