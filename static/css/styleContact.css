@@ -72,17 +72,20 @@ textarea {
 }
 
 .nav-links {
-    display: flex;
-    align-items: center;
-    gap: clamp(20px, 2.6vw, 50px);
+  display: flex;       
+  flex-direction: row; /* fixed in row */
+  list-style: none;
+  gap: 40px;           
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links a {
-    position: relative;
-    color: #ffffff;
-    font-size: 16px;
-    text-decoration: none;
-    white-space: nowrap;
+  position: relative;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  white-space: nowrap;
 }
 
 .nav-links a::after {
@@ -330,7 +333,6 @@ textarea {
 
 .section-intro h2,
 .feedback-copy h2 {
-    margin: 0;
     color: var(--ink);
     font-size: clamp(35px, 4vw, 56px);
     line-height: 1.04;

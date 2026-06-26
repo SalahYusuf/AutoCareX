@@ -33,10 +33,10 @@
 }
 
 .nav-links {
-  display: flex; 
+  display: flex;       
   flex-direction: row; /* fixed in row */
   list-style: none;
-  gap: 50px;
+  gap: 40px;           
   margin: 0;
   padding: 0;
 }

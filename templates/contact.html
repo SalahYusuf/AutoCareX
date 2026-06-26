@@ -1,3 +1,5 @@
+
+<!---
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -28,6 +30,21 @@
             <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
         </div>
     </nav>
+-->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+AutoCareX - Contact
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/styleContact.css' %}">
+<link rel="stylesheet" href="{% static 'css/trans.css' %}">
+{% endblock %}
+
+{% block content %}
 
     <main class="page-content">
         <section class="contact-hero">
@@ -216,5 +233,10 @@
         </div>
         <span>© {% now "Y" %} AutoCareX</span>
     </footer>
+
+<!--
 </body>
 </html>
+--> 
+
+{% endblock %}
