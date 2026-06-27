@@ -42,7 +42,7 @@ html {
   display: flex;       
   flex-direction: row; /* fixed in row */
   list-style: none;
-  gap: 40px;           
+  gap: 50px;           
   margin: 0;
   padding: 0;
 }

@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 import sched
+from PIL import Image, UnidentifiedImageError
 from django.utils import timezone
 
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from login.models import UserProfile
+
 
 
 # Default schedules applied when a new vehicle is added
@@ -791,7 +793,61 @@ def profile(request):
     if request.method == "POST":
         action = request.POST.get("action")
 
-        if action == "update_info":
+        if action == "update_profile_picture":
+            profile_picture = request.FILES.get(
+                "profile_picture"
+            )
+
+            if not profile_picture:
+                messages.error(
+                    request,
+                    "Please choose an image to upload.",
+                )
+
+            elif profile_picture.size > 5 * 1024 * 1024:
+                messages.error(
+                    request,
+                    "Profile picture must be 5 MB or smaller.",
+                )
+
+            elif profile_picture.content_type not in {
+                "image/jpeg",
+                "image/png",
+            }:
+                messages.error(
+                    request,
+                    "Only PNG and JPEG images are supported.",
+                )
+
+            else:
+                try:
+                    Image.open(profile_picture).verify()
+                    profile_picture.seek(0)
+
+                except (UnidentifiedImageError, OSError):
+                    messages.error(
+                        request,
+                        "The selected file is not a valid image.",
+                    )
+
+                else:
+                    if user_profile.profile_picture:
+                        user_profile.profile_picture.delete(
+                            save=False
+                        )
+
+                    user_profile.profile_picture = profile_picture
+
+                    user_profile.save(
+                        update_fields=["profile_picture"]
+                    )
+
+                    messages.success(
+                        request,
+                        "Profile picture updated successfully.",
+                    )
+
+        elif action == "update_info":
             new_username = request.POST.get(
                 "username",
                 "",

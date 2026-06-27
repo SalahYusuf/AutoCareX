@@ -1,4 +1,4 @@
-<!-- {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,28 +26,14 @@
                     <li><a href="{% url 'dashboard:index' %}">Home</a></li>
                     <li><a href="{% url 'dashboard:vehicle' %}" >Manage Car</a></li>
                     <li><a href="{% url 'dashboard:location' %}" >Car Workhop</a></li>
-                    <li><a href="{% url 'dashboard:contact' %}" class="active">Contact Page</a></li>
+                    <li><a href="{% url 'dashboard:upgrade' %}" class="active">Suggestion</a></li>
                     <a href="{% url 'dashboard:profile' %}">Profile</a>
                 </ul>
 
                 <div class="nav-cta">
                     <a href="{% url 'dashboard:index' %}" class="btn-contact">Contact Us</a>
                 </div>
-            </nav> -->
-
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}
-AutoCareX - Contact
-{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/styleContact.css' %}">
-<link rel="stylesheet" href="{% static 'css/trans.css' %}">
-{% endblock %}
-
-{% block content %}
+            </nav>
 
                 <nav class="first-container">
 
@@ -507,5 +493,3 @@ AutoCareX - Contact
     </body>
  
 </html>
-
-{% endblock %}

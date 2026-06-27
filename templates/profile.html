@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 {% load static %}
@@ -29,7 +29,7 @@
 
                 <a href="{% url 'dashboard:location' %}">Car Workshop</a>
 
-                <a href="{% url 'dashboard:contact' %}">Contact Page</a>
+                <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
                 
                 <a href="{% url 'dashboard:profile' %}" class="active">Profile</a>
             </ul>
@@ -37,21 +37,7 @@
             <div class="nav-cta">
                 <a href="#" class="btn-contact">Contact Us</a>
             </div>
-        </nav> -->
-
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}
-AutoCareX - Contact
-{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/styleContact.css' %}">
-<link rel="stylesheet" href="{% static 'css/trans.css' %}">
-{% endblock %}
-
-{% block content %}        
+        </nav>
 
         <div class="profile-container">
 
@@ -71,7 +57,21 @@ AutoCareX - Contact
                 <aside class="sidebar">
 
                     <label class="photo-container" for="photo-toggle">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="User Avatar" class="photo" id="profile-pic">
+                        {% if user_profile.profile_picture %}
+                            <img
+                                src="{{ user_profile.profile_picture.url }}"
+                                alt="User Avatar"
+                                class="photo"
+                                id="profile-pic"
+                            >
+                        {% else %}
+                            <img
+                                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
+                                alt="User Avatar"
+                                class="photo"
+                                id="profile-pic"
+                            >
+                        {% endif %}
                         <div class="image-content">
                             <p>Change Picture</p>
                         </div>
@@ -84,22 +84,56 @@ AutoCareX - Contact
                         <div class="photo-box">
                             <label for="photo-toggle" class="close-x-btn">&times;</label>
                             
-                            <div class="upload-container">
-                                <input type="file" id="file-upload" class="file-input" accept="image/png, image/jpeg, image/jpg" />
-                                
+                            <form
+                                method="POST"
+                                enctype="multipart/form-data"
+                                class="upload-container"
+                                id="profile-picture-form"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="update_profile_picture"
+                                >
+
+                                <input
+                                    type="file"
+                                    id="file-upload"
+                                    name="profile_picture"
+                                    class="file-input"
+                                    accept="image/png, image/jpeg, image/jpg"
+                                >
+
                                 <label for="file-upload" class="upload-box">
                                     <div class="icon-wrapper">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="17 8 12 3 7 8" />
-                                        <line x1="12" y1="3" x2="12" y2="15" />
-                                    </svg>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="32"
+                                            height="32"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path
+                                                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                                            ></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
                                     </div>
-                                    
+
                                     <span class="upload-btn">Upload An Image</span>
-                                    <p class="upload-text">Supports PNG, JPEG, and JPG</p>
+                                    <p class="upload-text">
+                                        Supports PNG, JPEG, and JPG
+                                    </p>
                                 </label>
-                            </div>
+                            </form>
+
                         </div>
                             
                     </div>
@@ -310,11 +344,23 @@ AutoCareX - Contact
                 });
             });
 
-            let profilePic = document.getElementById("profile-pic")
-            let fileUpload = document.getElementById("file-upload")
+            const profilePic = document.getElementById("profile-pic");
+            const fileUpload = document.getElementById("file-upload");
+            const profilePictureForm = document.getElementById(
+                "profile-picture-form"
+            );
 
-            fileUpload.onchange = function (){
-                profilePic.src = URL.createObjectURL(fileUpload.files[0])
+            if (fileUpload && profilePic && profilePictureForm) {
+                fileUpload.addEventListener("change", () => {
+                    const selectedFile = fileUpload.files[0];
+
+                    if (!selectedFile) {
+                        return;
+                    }
+
+                    profilePic.src = URL.createObjectURL(selectedFile);
+                    profilePictureForm.submit();
+                });
             }
 
         </script>
@@ -323,5 +369,3 @@ AutoCareX - Contact
 
 
 </html>
-
-{% endblock %}
