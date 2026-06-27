@@ -18,7 +18,6 @@ class EmailVerificationToken(models.Model):
 
     @classmethod
     def create_for_user(cls, user):
-        # Delete any existing token for this user first
         cls.objects.filter(user=user).delete()
         token = secrets.token_hex(32)
         return cls.objects.create(
@@ -32,3 +31,25 @@ class EmailVerificationToken(models.Model):
 
     def __str__(self):
         return f"Verification token for {self.user.username}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="account_profile",
+    )
+
+    profile_picture = models.ImageField(
+        upload_to="profile_pictures/",
+        blank=True,
+        null=True,
+    )
+
+    about_me = models.TextField(
+        blank=True,
+        max_length=500,
+    )
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"

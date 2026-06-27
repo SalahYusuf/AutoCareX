@@ -70,20 +70,22 @@
 <div class="page-content">
 
     <nav class="floating-nav">
-        <div class="logo-area">
-            <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img">
-        </div>
-        <ul class="nav-links">
-            <a href="{% url 'dashboard:index' %}">Home</a>
-            <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
-            <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-            <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
-            <a href="{% url 'dashboard:profile' %}">Profile</a>
-        </ul>
-        <div class="nav-cta">
-            <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
-        </div>
-    </nav>
+            <div class="logo-area">
+                <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img" alt="AutoCareX">
+            </div>
+
+            <ul class="nav-links">
+                <a href="{% url 'dashboard:index' %}">Home</a>
+                <a href="{% url 'dashboard:vehicle' %}" class="active">Manage Car</a>
+                <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+                <a href="{% url 'dashboard:contact' %}">Contact Page</a>
+                <a href="{% url 'dashboard:profile' %}">Profile</a>
+            </ul>
+
+            <div class="nav-cta">
+                <a href="{% url 'login:logout' %}" class="btn-contact">Log Out</a>
+            </div>
+        </nav>
 
     <div class="maint-wrapper">
 
