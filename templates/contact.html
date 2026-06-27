@@ -12,22 +12,22 @@
 </head>
 <body>
     <nav class="floating-nav">
-        <a href="{% url 'dashboard:index' %}" class="logo-area" aria-label="AutoCareX home">
-            <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img" alt="AutoCareX">
-        </a>
+            <div class="logo-area">
+                <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img" alt="AutoCareX">
+            </div>
 
-        <div class="nav-links" aria-label="Primary navigation">
-            <a href="{% url 'dashboard:index' %}">Home</a>
-            <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
-            <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-            <a href="{% url 'dashboard:contact' %}" class="active">Contact Page</a>
-            <a href="{% url 'dashboard:profile' %}">Profile</a>
-        </div>
+            <ul class="nav-links">
+                <a href="{% url 'dashboard:index' %}">Home</a>
+                <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
+                <a href="{% url 'dashboard:location' %}">Car Workshop</a>
+                <a href="{% url 'dashboard:contact' %}" class="active">Contact Page</a>
+                <a href="{% url 'dashboard:profile' %}">Profile</a>
+            </ul>
 
-        <div class="nav-cta">
-            <a href="{% url 'login:logout' %}" class="btn-contact">Logout</a>
-        </div>
-    </nav>
+            <div class="nav-cta">
+                <a href="{% url 'login:logout' %}" class="btn-contact">Log Out</a>
+            </div>
+        </nav>
 
     <main class="page-content">
         <section class="contact-hero">
