@@ -1,0 +1,18 @@
+{% load static %}
+<nav class="floating-nav">
+    <div class="logo-area">
+        <img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img" alt="AutoCareX">
+    </div>
+
+    <ul class="nav-links">
+        <a href="{% url 'dashboard:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">Home</a>
+        <a href="{% url 'dashboard:vehicle' %}" class="{% if request.resolver_match.url_name == 'vehicle' or request.resolver_match.url_name == 'maintenance' or request.resolver_match.url_name == 'log_service' or request.resolver_match.url_name == 'service_history' or request.resolver_match.url_name == 'upgrade' %}active{% endif %}">Manage Car</a>
+        <a href="{% url 'dashboard:location' %}" class="{% if request.resolver_match.url_name == 'location' %}active{% endif %}">Car Workshop</a>
+        <a href="{% url 'dashboard:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact Page</a>
+        <a href="{% url 'dashboard:profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Profile</a>
+    </ul>
+
+    <div class="nav-cta">
+        <a href="{% url 'login:logout' %}" class="btn-contact">Log Out</a>
+    </div>
+</nav>
