@@ -1,5 +1,6 @@
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-
+from datetime import timedelta
+from django.utils import timezone
 
 def to_decimal(value, default=None):
     try:
@@ -211,3 +212,77 @@ def summarize_charging_session(
         "cost_per_km": calculate_cost_per_km(charging_cost, distance_km),
         "cost_per_100km": calculate_cost_per_100km(charging_cost, distance_km),
     }
+
+EV_MAINTENANCE_RULES = {
+    "Tyre Rotation": 10000,
+    "Brake Inspection": 20000,
+    "Cabin Air Filter": 15000,
+    "Battery Health Check": 40000,
+    "Coolant System Check": 50000,
+    "Wheel Alignment": 20000,
+    "General EV Inspection": 10000,
+}
+
+
+def calculate_maintenance_due(last_service_km, current_km, annual_km, interval_km):
+    last_service = to_decimal(last_service_km)
+    current = to_decimal(current_km)
+    annual = to_decimal(annual_km)
+    interval = to_decimal(interval_km)
+
+    if (
+        last_service is None
+        or current is None
+        or annual is None
+        or interval is None
+    ):
+        return None
+
+    next_due_km = last_service + interval
+    km_remaining = next_due_km - current
+
+    daily_km = annual / Decimal("365") if annual > 0 else None
+
+    if daily_km:
+        days_until_due = km_remaining / daily_km
+
+        if days_until_due < 0:
+            days_until_due = 0
+
+        due_date = timezone.now().date() + timedelta(
+            days=int(days_until_due)
+        )
+    else:
+        due_date = None
+
+    if km_remaining <= 0:
+        status = "Overdue"
+    elif km_remaining <= 1000:
+        status = "Due Soon"
+    else:
+        status = "Good"
+
+    return {
+        "next_due_km": round_decimal(next_due_km, 0),
+        "km_remaining": round_decimal(km_remaining, 0),
+        "estimated_due_date": due_date,
+        "status": status,
+    }
+
+
+def get_all_maintenance_status(
+    last_service_km,
+    current_km,
+    annual_km,
+):
+    results = {}
+
+    for service_name, interval_km in EV_MAINTENANCE_RULES.items():
+        results[service_name] = calculate_maintenance_due(
+            last_service_km=last_service_km,
+            current_km=current_km,
+            annual_km=annual_km,
+            interval_km=interval_km,
+        )
+
+    return results

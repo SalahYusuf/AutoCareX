@@ -27,22 +27,13 @@
         .msg { padding:10px 14px; border-radius:8px; font-size:14px; margin-bottom:16px; }
         .msg-error { background:#fff0f0; color:#c0392b; }
     </style>
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 </head>
 <body>
 <div class="page-overlay"></div>
 <div class="page-content">
 
-    <nav class="floating-nav">
-        <div class="logo-area"><img src="{% static 'image/autocarexlogowhhite.png' %}" class="nav-logo-img"></div>
-        <ul class="nav-links">
-            <a href="{% url 'dashboard:index' %}">Home</a>
-            <a href="{% url 'dashboard:vehicle' %}">Manage Car</a>
-            <a href="{% url 'dashboard:location' %}">Car Workshop</a>
-            <a href="{% url 'dashboard:upgrade' %}">Suggestion</a>
-            <a href="{% url 'dashboard:profile' %}">Profile</a>
-        </ul>
-        <div class="nav-cta"><a href="{% url 'login:logout' %}" class="btn-contact">Logout</a></div>
-    </nav>
+    {% include "partials/navbar.html" %}
 
     <div class="log-wrapper">
         <div class="log-card">

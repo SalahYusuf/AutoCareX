@@ -196,7 +196,7 @@ body {
 
 .main_container {
   display: flex;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 90px);
   margin-top: 80px;
   width: 100%;
 }
@@ -263,7 +263,7 @@ body {
 #map {
   flex: 1;
   width: 100%;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 90px);
 }
 
 .custom_map_label {
@@ -288,19 +288,9 @@ body {
   z-index: 9999;        
 }
 
-.details_header1 {
+.details_header1, .details_header2, .details_header3, .details_header4, .details_header5, .details_header6, .details_header7, .details_header8 {
   display: flex;
-  gap: 60px;
-}
-
-.details_header2 {
-  display: flex;
-  gap: 170px;
-}
-
-.details_header3 {
-  display: flex;
-  gap: 187px;
+  justify-content: space-between;
 }
 
 .header_word {
@@ -366,7 +356,7 @@ body {
   margin-top: -4px;
 }
 
-.kembangan_image {
+.petaling_image, .kembangan_image {
   height: 210px;
   width: 370px;
   border-radius: 5px;
@@ -375,8 +365,26 @@ body {
   margin-top: -4px;
 }
 
-.petaling_image {
-  height: 210px;
+.cheras_image, .outlet_image {
+  height: 195px;
+  width: 370px;
+  border-radius: 5px;
+  margin-bottom: -9px;
+  margin-left: -2px;
+  margin-top: -4px;
+}
+
+.klsegambut_image {
+  height: 205px;
+  width: 370px;
+  border-radius: 5px;
+  margin-bottom: -9px;
+  margin-left: -2px;
+  margin-top: -4px;
+}
+
+.kajang_image, .puchong_image {
+  height: 215px;
   width: 370px;
   border-radius: 5px;
   margin-bottom: -9px;
@@ -388,6 +396,34 @@ body {
   display: inline-block;
   text-align: center;
   margin-top: 27px;
+  padding: 9px 130px;
+  border: 2px solid #8e8a8a;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  font-size: 17px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn_nav2 {
+  display: inline-block;
+  text-align: center;
+  margin-top: 48px;
+  padding: 9px 130px;
+  border: 2px solid #8e8a8a;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  font-size: 17px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn_nav3 {
+  display: inline-block;
+  text-align: center;
+  margin-top: 16px;
   padding: 9px 130px;
   border: 2px solid #8e8a8a;
   border-radius: 8px;

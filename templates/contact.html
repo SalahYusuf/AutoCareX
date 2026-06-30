@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
+    <title>AutoCareX - Contact</title>
+
+    <link rel="stylesheet" href="{% static 'css/styleContact.css' %}">
+    <link rel="stylesheet" href="{% static 'css/trans.css' %}">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+<body>
+    {% include "partials/navbar.html" %}
+
+    <main class="page-content">
+        <section class="contact-hero">
+            <div class="hero-copy">
+                <span class="eyebrow">AutoCareX Support</span>
+                <h1>Need help with your EV?</h1>
+                <p>
+                    Ask about your account, vehicle records, maintenance tracking,
+                    or nearby Proton e.MAS workshops. Our team is ready to help.
+                </p>
+            </div>
+
+            <div class="hero-orbit" aria-hidden="true">
+                <div class="orbit-ring orbit-ring-one"></div>
+                <div class="orbit-ring orbit-ring-two"></div>
+                <div class="hero-bolt">
+                    <svg viewBox="0 0 24 24" role="img">
+                        <path d="M13.2 2 5.5 13.1h5.3L9.9 22l8.6-12.2h-5.3L13.2 2Z" fill="currentColor"/>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        {% if messages %}
+            <div class="message-stack" aria-live="polite">
+                {% for message in messages %}
+                    <div class="site-message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <section class="contact-section" aria-labelledby="contact-heading">
+            <div class="section-intro">
+                <span class="section-kicker">Get in touch</span>
+                <h2 id="contact-heading">Choose the easiest way to reach us.</h2>
+                <p>don't be afraid to reach us!</p>
+            </div>
+
+            <div class="contact-card-grid">
+                <a class="contact-card" href="mailto:{{ contact_email }}">
+                    <span class="icon-shell" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v10A1.5 1.5 0 0 1 20 18.5H4A1.5 1.5 0 0 1 2.5 17V7A1.5 1.5 0 0 1 4 5.5Z"/>
+                            <path d="m4 7 8 6 8-6"/>
+                        </svg>
+                    </span>
+                    <span class="contact-copy">
+                        <span class="contact-label">Email</span>
+                        <strong>salah@salahudin.my</strong>
+                        <span class="contact-note">Best for account and technical support</span>
+                    </span>
+                    <span class="card-arrow" aria-hidden="true">↗</span>
+                </a>
+
+                <a class="contact-card" href="tel:{{ contact_phone_link }}">
+                    <span class="icon-shell" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M8.2 3.5 10 7.7a1.5 1.5 0 0 1-.35 1.65l-1.2 1.2a14.4 14.4 0 0 0 5 5l1.2-1.2A1.5 1.5 0 0 1 16.3 14l4.2 1.8a1.5 1.5 0 0 1 .9 1.55v2.15A1.5 1.5 0 0 1 19.9 21C10.55 21 3 13.45 3 4.1A1.5 1.5 0 0 1 4.5 2.6h2.15a1.5 1.5 0 0 1 1.55.9Z"/>
+                        </svg>
+                    </span>
+                    <span class="contact-copy">
+                        <span class="contact-label">Phone</span>
+                        <strong>019-357-4100</strong>
+                        <span class="contact-note">Anywhere, anytime, just don't when we are asleep...</span>
+                    </span>
+                    <span class="card-arrow" aria-hidden="true">↗</span>
+                </a>
+
+                <div class="contact-card">
+                    <span class="icon-shell" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/>
+                            <circle cx="12" cy="10" r="2.5"/>
+                        </svg>
+                    </span>
+                    <span class="contact-copy">
+                        <span class="contact-label">Service area</span>
+                        <strong>{{ contact_address }}</strong>
+                        <span class="contact-note">Proton e.MAS support and workshop guidance</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="feedback-section" aria-labelledby="feedback-heading">
+            <div class="feedback-copy">
+                <span class="section-kicker">Share feedback</span>
+                <h2 id="feedback-heading">Help us improve AutoCareX.</h2>
+                <p>
+                    Tell us what worked, what felt confusing, or what feature would
+                    make EV ownership easier for you.
+                </p>
+
+                <div class="feedback-promise">
+                    <span class="promise-icon" aria-hidden="true">✓</span>
+                    <span>
+                        <strong>Every message is reviewed.</strong>
+                        Your feedback directly shapes future improvements.
+                    </span>
+                </div>
+            </div>
+
+            <form class="feedback-form" method="post" action="{% url 'dashboard:contact' %}">
+                {% csrf_token %}
+
+                <fieldset class="rating-group">
+                    <legend>Your experience</legend>
+                    <div class="rating-options">
+                        {% for value in "12345" %}
+                            <label class="rating-option">
+                                <input
+                                    type="radio"
+                                    name="rating"
+                                    value="{{ value }}"
+                                    {% if form_data.rating == value %}checked{% endif %}
+                                    required
+                                >
+                                <span>{{ value }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <div class="rating-caption">
+                        <span>Needs work</span>
+                        <span>Excellent</span>
+                    </div>
+                </fieldset>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="name">Name</label>
+                        <input
+                            id="name"
+                            name="name"
+                            type="text"
+                            value="{{ form_data.name|default:request.user.get_full_name|default:request.user.username }}"
+                            placeholder="Your name"
+                            maxlength="100"
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
+
+                    <div class="field-group">
+                        <label for="email">Email</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value="{{ form_data.email|default:request.user.email }}"
+                            placeholder="you@example.com"
+                            maxlength="254"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="message">Message</label>
+                    <textarea
+                        id="message"
+                        name="message"
+                        rows="6"
+                        maxlength="2000"
+                        placeholder="What is on your mind?"
+                        required
+                    >{{ form_data.message }}</textarea>
+                    <div class="field-help">Maximum 2,000 characters.</div>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m21 3-8.5 18-2.4-7.1L3 11.5 21 3Z"/>
+                        <path d="m10.1 13.9 4.7-4.7"/>
+                    </svg>
+                    <span>Send feedback</span>
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div>
+            <img src="{% static 'image/autocarexlogoblack.png' %}" alt="AutoCareX">
+            <span>Smarter care for your Proton e.MAS.</span>
+        </div>
+        <span>© {% now "Y" %} AutoCareX</span>
+    </footer>
+</body>
+</html>

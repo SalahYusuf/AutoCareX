@@ -239,3 +239,6 @@ def logout_view(request):
     auth_logout(request)
     messages.success(request, "You have been logged out.")
     return redirect("dashboard:index")
+
+def location_view(request):
+    return render(request, "login/location.html")

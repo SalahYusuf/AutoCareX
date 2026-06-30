@@ -3,35 +3,19 @@
 <html lang="en">
 
     <head>
-        <link rel="icon" href="{{ url_for('static', filename='image/autocarexlogoblack.png') }}">
-        <title>AutoCareX - Manage Car</title>
+        <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
+        <title>AutoCareX - Car Workshop</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/location_style.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/trans.css') }}?v=1">
+        <link rel="stylesheet" href="{% static 'css/location_style.css' %}?v=3">
+        <link rel="stylesheet" href="{% static 'css/trans.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     </head>
 
     <body>
 
-      <nav class="floating-nav">
-        <div class="logo-area">
-          <img src="{{ url_for('static', filename='image/autocarexlogowhhite.png') }}" class="nav-logo-img">
-        </div>
-
-        <ul class="nav-links"> 
-          <a href="{{ url_for('home')}}">Home</a >
-          <a href="{{ url_for('vehicle') }}">Manage Car</a >
-          <a href="{{ url_for('location') }}" class="active">Car Workshop</a >
-          <a href="{{ url_for('upgrade') }}">Suggestion</a >
-          <li><a href="#">Profile</a ></li>
-        </ul>
-
-        <div class="nav-cta">
-          <a href="#" class="btn-contact">Contact Us</a >
-        </div>
-      </nav>
-
+      {% include "partials/navbar.html" %}
 
       <div class="main_container">
         <div class="sidebar">
@@ -123,7 +107,7 @@
                 <a href="https://maps.app.goo.gl/3Uq69RdsjhnhG7gS6" target="_blank" class="two_button">
                   <i class="icon_nav"></i> Navigate Now
                 </a>
-                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop4')">
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(3.102760344958885, 101.7275, 'modal_shop4')">
                   <i class="icon_call"></i> Outlet
                 </a>
               </div>  
@@ -143,7 +127,7 @@
                 <a href="https://maps.app.goo.gl/XZHyEA7iMqgqWhaJA" target="_blank" class="two_button">
                   <i class="icon_nav"></i> Navigate Now
                 </a>
-                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop5')">
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(3.186297262411022,101.6670, 'modal_shop5')">
                   <i class="icon_call"></i> Outlet
                 </a>
               </div>  
@@ -163,7 +147,7 @@
                 <a href="https://maps.app.goo.gl/kasf4HqyM6n12mncA" target="_blank" class="two_button">
                   <i class="icon_nav"></i> Navigate Now
                 </a>
-                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop6')">
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(3.0346599327321524,101.771, 'modal_shop6')">
                   <i class="icon_call"></i> Outlet
                 </a>
               </div>  
@@ -183,7 +167,7 @@
                 <a href="https://maps.app.goo.gl/GoTVaWo4C9PxiMoEA" target="_blank" class="two_button">
                   <i class="icon_nav"></i> Navigate Now
                 </a>
-                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop7')">
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(3.0459649809239235,101.613, 'modal_shop7')">
                   <i class="icon_call"></i> Outlet
                 </a>
               </div>  
@@ -203,7 +187,7 @@
                 <a href="https://maps.app.goo.gl/pkwbxBvoeinY5u7D8" target="_blank" class="two_button">
                   <i class="icon_nav"></i> Navigate Now
                 </a>
-                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9702847456754187,101.710, 'modal_shop8')">
+                <a  href="javascript:void(0);" class="two_button" onclick="goToShop(2.9564453465167593,101.5445,'modal_shop8')">
                   <i class="icon_call"></i> Outlet
                 </a>
               </div>                
@@ -228,7 +212,7 @@
               <p class="details_content">Lot 2AT-8, Ground Floor, City, IOI City Mall, Lbh IRC, Ioi Resort, 62502 City, Putrajaya</p>
               <p class="details_title">Phone Number : </p>
               <p class="details_content">016-8622887</p>
-              <a href="https://maps.app.goo.gl/w6Bj5dXd9EAyGUWi9" target="_blank" class="btn_nav1">
+              <a href="https://maps.app.goo.gl/w6Bj5dXd9EAyGUWi9" target="_blank" class="btn_nav2">
                   <i></i> Navigate Now
                 </a>
             </div>
@@ -273,9 +257,104 @@
           </div>
         </div>
 
+        <div id="modal_shop4" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header4">
+              <h3 class="header_word">Cheras<br>(Able Mobility)</h3>
+              <button onclick="closeModal ('modal_shop4')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/cheras_image.png" class="cheras_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">Lot 4523D, Batu ½, Jln Cheras, Taman Sri Bahtera Kuala Lumpur, 56100 Willayah Persekutuan, Wilayah Persekutuan Kuala Lumpur</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">011-61499834</p>
+              <a href="https://maps.app.goo.gl/3Uq69RdsjhnhG7gS6" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="modal_shop5" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header5">
+              <h3 class="header_word">KL Segambut<br>(Cahaya Technology)</h3>
+              <button onclick="closeModal ('modal_shop5')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/klsegambut.png" class="klsegambut_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">39, Jalan 2, 57B, Persiaran Segambut Tengah, Segambut, 51200 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">011-25659903</p>
+              <a href="https://maps.app.goo.gl/XZHyEA7iMqgqWhaJA" target="_blank" class="btn_nav3">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="modal_shop6" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header6">
+              <h3 class="header_word">Kajang, Cheras<br>(ProAuto Drive)</h3>
+              <button onclick="closeModal ('modal_shop6')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/kajang.png" class="kajang_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">Level 1 (e, MAS Showroom, Lot 4165, Jalan Besar, Bandar Sungai Long, 43000 Kajang, Selangor)</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">03-87418846</p>
+              <a href="https://maps.app.goo.gl/kasf4HqyM6n12mncA" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="modal_shop7" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header7">
+              <h3 class="header_word">Puchong<br>(AJG Mobility)</h3>
+              <button onclick="closeModal ('modal_shop7')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/puchong.png" class="puchong_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">1, Jalan Kenari 1, Off, Jalan Puchong, Bandar Puchong Jaya, 47100 Puchong, Selangor</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">012-2171880</p>
+              <a href="https://maps.app.goo.gl/GoTVaWo4C9PxiMoEA" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="modal_shop8" class="workshop_popup" onclick="closeAllModals(event)">
+          <div class="details_box" onclick="event.stopPropagation()">
+            <div class="details_header8">
+              <h3 class="header_word">Quayside Mall-PKT AutoPro</h3>
+              <button onclick="closeModal ('modal_shop8')" class="close_btn">x</button>
+            </div>
+            <div class="details_body">
+              <img src="../static/image/outlet.png" class="outlet_image">
+              <p class="details_title">Address : </p>
+              <p class="details_content">GF(W) - 05-01, Sales Showroom, Quayside Mall, B1-09 (K17 To K20), Service Center, 25.7, Persiaran Freesia, Gamuda Kemuning, 42500 Telok Panglima Garang, Selangor</p>
+              <p class="details_title">Phone Number : </p>
+              <p class="details_content">010-9767068</p>
+              <a href="https://maps.app.goo.gl/pkwbxBvoeinY5u7D8" target="_blank" class="btn_nav1">
+                  <i></i> Navigate Now
+                </a>
+            </div>
+          </div>
+        </div>
+
       </div>
       <script>
-          var map = L.map('map').setView([3.05, 101.68], 12); /* Let cyberjaya as center */
+          var map = L.map('map').setView([3.05, 101.68], 11.5); /* Let cyberjaya as center */
 
           L.tileLayer ('https://api.maptiler.com/maps/streets-v4/256/{z}/{x}/{y}.png?key=mUlTWN3ORrePiGSX39in' ,{
             attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
@@ -316,6 +395,8 @@
               name: 'Cheras (Able Mobility)', 
               lat: 3.102760344958885,  
               lng: 101.73474563068413, 
+              lat1: 3.102760344958885,
+              lng1: 101.7275,
               address: 'Lot 4523D, Batu ½, Jln Cheras, Taman Sri Bahtera Kuala Lumpur, 56100 Willayah Persekutuan, Wilayah Persekutuan Kuala Lumpur', 
               phone: '011-61499834',
               id : 'modal_shop4'
@@ -324,22 +405,28 @@
               name: 'KL Segambut (Cahaya Technology)', 
               lat: 3.186297262411022,  
               lng: 101.67555267116448, 
+              lat1: 3.186297262411022,
+              lng1: 101.6670,
               address: '39, Jalan 2, 57B, Persiaran Segambut Tengah, Segambut, 51200 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur', 
               phone: '011-25659903',
               id : 'modal_shop5'
             },
             {
-              name: 'Kajang Cheras (ProAuto Drive)', 
+              name: 'Kajang, Cheras (ProAuto Drive)', 
               lat: 3.0346599327321524,  
-              lng: 101.77959135767104, 
-              address: 'Level 1 (e, MAS Showroom, Lot 4165, Jalan Besar, Bandar Sungai Long, 43000 Kajang, Selangor', 
+              lng: 101.77959135767104,
+              lat1: 3.0346599327321524,
+              lng1: 101.771,
+              address: 'Level 1 (e, MAS Showroom, Lot 4165, Jalan Besar, Bandar Sungai Long, 43000 Kajang, Selangor)', 
               phone: '03-87418846',
               id : 'modal_shop6'
             },
             {
-              name: 'Proton e.MAS Puchong (AJG Mobility)', 
+              name: 'Puchong (AJG Mobility)', 
               lat: 3.0459649809239235,  
-              lng: 101.62067954417756, 
+              lng: 101.62067954417756,
+              lat1: 3.0459649809239235,
+              lng1: 101.613,
               address: '1, Jalan Kenari 1, Off, Jalan Puchong, Bandar Puchong Jaya, 47100 Puchong, Selangor', 
               phone: '012-2171880',
               id : 'modal_shop7'
@@ -348,6 +435,8 @@
               name: 'Quayside Mall-PKT AutoPro', 
               lat: 2.9564453465167593,  
               lng: 101.55282144232896, 
+              lat1: 2.9564453465167593,
+              lng1: 101.5445,
               address: 'GF(W) - 05-01, Sales Showroom, Quayside Mall, B1-09 (K17 To K20), Service Center, 25.7, Persiaran Freesia, Gamuda Kemuning, 42500 Telok Panglima Garang, Selangor', 
               phone: '010-9767068',
               id : 'modal_shop8'

@@ -1,0 +1,205 @@
+/* Shared AutoCareX navbar only. Loaded after each page stylesheet. */
+.floating-nav,
+.floating-nav * {
+    box-sizing: border-box;
+    font-synthesis: none;
+}
+
+.floating-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    z-index: 10000;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 1140px;
+    max-width: calc(100vw - 40px);
+    height: 60px;
+    margin: 0;
+    padding: 0 10px 0 30px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    transform: translateX(-50%);
+    pointer-events: auto;
+
+    font-family: Georgia, "Times New Roman", serif !important;
+    -webkit-font-smoothing: auto !important;
+    -moz-osx-font-smoothing: auto !important;
+}
+
+.floating-nav .logo-area {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+
+    height: 100%;
+    margin: 0;
+    padding: 0 0 10px;
+}
+
+.floating-nav .nav-logo-img {
+    display: block;
+
+    width: auto;
+    height: 80px;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+
+    object-fit: contain;
+}
+
+.floating-nav .nav-links {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    gap: 50px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+    white-space: nowrap;
+}
+
+.floating-nav .nav-links a {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+
+    margin: 0;
+    padding: 0;
+
+    color: #ffffff;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    line-height: 1.2;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    -webkit-font-smoothing: auto !important;
+    -moz-osx-font-smoothing: auto !important;
+}
+
+.floating-nav .nav-links a::after {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+
+    width: 0;
+    height: 2px;
+
+    background-color: #ffffff;
+    content: "";
+    transition: width 0.3s ease;
+}
+
+.floating-nav .nav-links a:hover::after,
+.floating-nav .nav-links a.active::after {
+    width: 100%;
+}
+
+.floating-nav .nav-cta {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+}
+
+.floating-nav .btn-contact {
+    position: relative;
+    z-index: 1;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 108px;
+    height: 42px;
+    min-width: 108px;
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 50px;
+    background-color: #e7f63b;
+
+    color: #000000;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    line-height: 1;
+
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+
+    -webkit-font-smoothing: auto !important;
+    -moz-osx-font-smoothing: auto !important;
+
+    transition: color 0.35s ease;
+}
+
+.floating-nav .btn-contact::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+
+    width: 0;
+    height: 100%;
+
+    background-color: #000000;
+    content: "";
+    transition: width 0.4s ease;
+}
+
+.floating-nav .btn-contact:hover::before {
+    width: 100%;
+}
+
+.floating-nav .btn-contact:hover {
+    color: #ffffff;
+    transform: none;
+}
+
+@media (max-width: 1500px) {
+    .floating-nav .nav-links {
+        gap: 36px;
+    }
+}
+
+@media (max-width: 1180px) {
+    .floating-nav {
+        width: calc(100% - 40px);
+    }
+
+    .floating-nav .nav-links {
+        gap: 24px;
+    }
+
+    .floating-nav .nav-links a,
+    .floating-nav .btn-contact {
+        font-size: 16px !important;
+    }
+}
