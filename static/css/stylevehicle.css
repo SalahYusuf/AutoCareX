@@ -125,7 +125,7 @@
 }
 
 .text-container {
-  margin-left: 175px;
+  margin-left: 40px;
   position: absolute;
   display: flex;
   flex-direction:column;
@@ -3286,7 +3286,6 @@ footer {
 
 .empty-garage-title {
     width: 100%;
-    margin-right: auto;
-    margin-left: auto;
-    text-align: center;
+    margin: 0;
+    text-align: left;
 }
