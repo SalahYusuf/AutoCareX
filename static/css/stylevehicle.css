@@ -2678,3 +2678,615 @@ footer {
 }
 
 
+
+
+/* ==========================================================================
+   Integrated Manage Car additions
+   Added after the original stylesheet; existing rules above are unchanged.
+   ========================================================================== */
+
+.mcx-section-anchor,
+#maintenance-centre,
+#upgrade-centre {
+    scroll-margin-top: 110px;
+}
+
+.mcx-section-nav {
+    position: sticky;
+    top: 92px;
+    z-index: 900;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    width: fit-content;
+    max-width: calc(100% - 40px);
+    margin: 18px auto 28px;
+    padding: 7px;
+
+    border: 1px solid #d8dcda;
+    border-radius: 999px;
+    background: rgba(243, 245, 244, 0.96);
+    box-shadow: 0 12px 30px rgba(18, 24, 21, 0.12);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.mcx-section-nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 150px;
+    min-height: 46px;
+    padding: 10px 22px;
+
+    border-radius: 999px;
+
+    color: #5f6461;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.mcx-section-nav a:hover,
+.mcx-section-nav a:focus-visible {
+    color: #ffffff;
+    background: #111311;
+    transform: translateY(-1px);
+}
+
+.mcx-maintenance-section,
+.mcx-upgrade-section {
+    width: min(1440px, calc(100% - 64px));
+    margin: 46px auto 0;
+    padding: 34px;
+
+    border: 1px solid #d8dcda;
+    border-radius: 30px;
+    background: #f4f6f5;
+    box-shadow: 0 18px 48px rgba(19, 25, 22, 0.09);
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.mcx-upgrade-section {
+    margin-bottom: 54px;
+}
+
+.mcx-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+
+    margin-bottom: 26px;
+}
+
+.mcx-section-header > div:first-child {
+    max-width: 790px;
+}
+
+.mcx-section-header span,
+.mcx-component-id span,
+.mcx-recommendation-card > span {
+    color: #717874;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.mcx-section-header h2 {
+    margin: 7px 0 8px;
+
+    color: #101311;
+    font-size: clamp(28px, 3vw, 44px);
+    line-height: 1.04;
+}
+
+.mcx-section-header p {
+    margin: 0;
+
+    color: #656b67;
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.mcx-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.mcx-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 10px 18px;
+
+    border: 1px solid #d7dcda;
+    border-radius: 13px;
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.mcx-btn:hover {
+    transform: translateY(-1px);
+}
+
+.mcx-btn-lime {
+    border-color: #e9fb22;
+    color: #111311;
+    background: #e9fb22;
+}
+
+.mcx-btn-lime:hover {
+    box-shadow: 0 10px 22px rgba(193, 216, 0, 0.24);
+}
+
+.mcx-btn-outline {
+    color: #555c58;
+    background: #ffffff;
+}
+
+.mcx-btn-dark {
+    border-color: #111311;
+    color: #ffffff;
+    background: #111311;
+}
+
+.mcx-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+
+    margin-bottom: 22px;
+}
+
+.mcx-summary-grid > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    min-height: 76px;
+    padding: 16px 18px;
+
+    border: 1px solid #dde1df;
+    border-radius: 18px;
+    background: #ffffff;
+}
+
+.mcx-summary-grid span {
+    color: #747b77;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.mcx-summary-grid strong {
+    color: #111311;
+    font-size: 30px;
+}
+
+.mcx-summary-grid .overdue {
+    border-top: 4px solid #f24d52;
+}
+
+.mcx-summary-grid .due-soon {
+    border-top: 4px solid #f4b53e;
+}
+
+.mcx-summary-grid .healthy {
+    border-top: 4px solid #31a66a;
+}
+
+.mcx-summary-grid .readiness {
+    border-top: 4px solid #dcea00;
+}
+
+.mcx-maintenance-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.mcx-maintenance-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    min-width: 0;
+    padding: 24px;
+
+    overflow: visible;
+    border: 1px solid #dfe3e1;
+    border-top: 5px solid #31a66a;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 14px 30px rgba(21, 27, 24, 0.08);
+}
+
+.mcx-maintenance-card.status-overdue {
+    border-top-color: #f24d52;
+}
+
+.mcx-maintenance-card.status-due-soon {
+    border-top-color: #f4b53e;
+}
+
+.mcx-maintenance-card.is-disabled {
+    opacity: 0.58;
+}
+
+.mcx-maintenance-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.mcx-component-id {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-width: 0;
+}
+
+.mcx-component-id img {
+    width: 50px;
+    height: 50px;
+
+    border-radius: 12px;
+    background: #f3f5f4;
+
+    object-fit: cover;
+}
+
+.mcx-component-id h3 {
+    margin: 5px 0 0;
+
+    color: #111311;
+    font-size: 23px;
+    line-height: 1.1;
+}
+
+.mcx-status-badge {
+    flex: 0 0 auto;
+
+    padding: 8px 10px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.mcx-status-badge.healthy {
+    color: #16894d;
+    background: #e6f7ed;
+}
+
+.mcx-status-badge.due-soon {
+    color: #a66a00;
+    background: #fff4d8;
+}
+
+.mcx-status-badge.overdue {
+    color: #ea3e44;
+    background: #ffeaeb;
+}
+
+.mcx-status-badge.disabled {
+    color: #747a76;
+    background: #ecefed;
+}
+
+.mcx-interval-line {
+    margin: 0;
+
+    color: #68706b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.mcx-interval-line strong {
+    color: #313633;
+}
+
+.mcx-date-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    overflow: hidden;
+    border: 1px solid #dfe3e1;
+    border-radius: 16px;
+    background: #fafbfa;
+}
+
+.mcx-date-panel > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-width: 0;
+    padding: 15px;
+}
+
+.mcx-date-panel > div + div {
+    border-left: 1px solid #dfe3e1;
+}
+
+.mcx-date-panel span,
+.mcx-mileage-note span {
+    color: #777e7a;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.mcx-date-panel strong {
+    color: #161a18;
+    font-size: 15px;
+}
+
+.mcx-date-panel small {
+    color: #717874;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.mcx-date-panel small.overdue {
+    color: #f03f45;
+    font-weight: 800;
+}
+
+.mcx-date-panel small.due-soon {
+    color: #a66a00;
+    font-weight: 800;
+}
+
+.mcx-date-panel small.healthy {
+    color: #1c9959;
+    font-weight: 800;
+}
+
+.mcx-mileage-note {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 13px 14px;
+
+    border-radius: 13px;
+    background: #f2f4f3;
+}
+
+.mcx-mileage-note strong {
+    color: #4f5652;
+    font-size: 13px;
+    text-align: right;
+}
+
+.mcx-maintenance-actions {
+    display: grid;
+    grid-template-columns: 1.25fr 0.9fr 1fr;
+    gap: 8px;
+
+    margin-top: auto;
+}
+
+.mcx-maintenance-actions > *,
+.mcx-maintenance-actions form,
+.mcx-maintenance-actions .mcx-btn {
+    width: 100%;
+}
+
+.mcx-edit-details {
+    position: relative;
+}
+
+.mcx-edit-details summary {
+    list-style: none;
+}
+
+.mcx-edit-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.mcx-edit-form {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 10px);
+    z-index: 20;
+
+    display: grid;
+    gap: 10px;
+
+    width: 250px;
+    padding: 16px;
+
+    border: 1px solid #d8ddda;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 18px 42px rgba(15, 20, 17, 0.2);
+}
+
+.mcx-edit-form label {
+    display: grid;
+    gap: 6px;
+
+    color: #606763;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.mcx-edit-form input {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px;
+
+    border: 1px solid #d7dcda;
+    border-radius: 10px;
+    outline: none;
+
+    font: inherit;
+}
+
+.mcx-edit-form input:focus {
+    border-color: #c9dd00;
+    box-shadow: 0 0 0 3px rgba(221, 239, 28, 0.2);
+}
+
+.mcx-recommendation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.mcx-recommendation-card {
+    min-height: 190px;
+    padding: 24px;
+
+    border: 1px solid #dce1de;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 12px 28px rgba(19, 25, 22, 0.07);
+}
+
+.mcx-recommendation-card h3 {
+    margin: 12px 0 10px;
+
+    color: #121614;
+    font-size: 22px;
+    line-height: 1.2;
+}
+
+.mcx-recommendation-card p {
+    margin: 0;
+
+    color: #656c68;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.mcx-recommendation-card.good {
+    border-top: 5px solid #31a66a;
+}
+
+.mcx-recommendation-card.warning {
+    border-top: 5px solid #f4b53e;
+}
+
+.mcx-recommendation-card.urgent {
+    border-top: 5px solid #f24d52;
+}
+
+.mcx-recommendation-card.info {
+    border-top: 5px solid #dcea00;
+}
+
+.mcx-empty-section {
+    padding: 32px;
+
+    border: 1px dashed #cfd5d1;
+    border-radius: 20px;
+    background: #ffffff;
+
+    color: #707773;
+    text-align: center;
+}
+
+@media (max-width: 1180px) {
+    .mcx-maintenance-grid,
+    .mcx-recommendation-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mcx-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .mcx-section-nav {
+        position: static;
+        width: calc(100% - 28px);
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .mcx-section-nav a {
+        min-width: max-content;
+    }
+
+    .mcx-maintenance-section,
+    .mcx-upgrade-section {
+        width: calc(100% - 28px);
+        padding: 20px;
+        border-radius: 22px;
+    }
+
+    .mcx-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mcx-header-actions {
+        justify-content: flex-start;
+    }
+
+    .mcx-maintenance-grid,
+    .mcx-recommendation-grid,
+    .mcx-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mcx-maintenance-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .mcx-edit-form {
+        right: auto;
+        left: 0;
+    }
+}
+
+.empty-garage-title {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
