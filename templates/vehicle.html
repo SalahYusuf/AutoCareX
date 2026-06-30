@@ -978,14 +978,13 @@
                         </div>
 
                         <div class="mcx-maintenance-actions">
+                            {% url "dashboard:log_service" selected_car.id as log_service_url %}
+
                             <a
-                                href="
-                                    {% url 'dashboard:log_service' selected_car.id %}
-                                    ?component={{ card.component }}
-                                "
                                 class="mcx-btn mcx-btn-lime"
+                                href="{{ log_service_url }}?component={{ card.component|urlencode }}"
                             >
-                                Log Service
+                                Log Now
                             </a>
 
                             <form
