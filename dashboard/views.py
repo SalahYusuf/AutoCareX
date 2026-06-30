@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 import sched
 from PIL import Image, UnidentifiedImageError
+from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
 from ev_data.models import Vehicle, ServiceSchedule, MaintenanceLog,Notification
 import csv
@@ -52,6 +54,224 @@ COMPONENT_UI = {
     "gear_oil": {"label": "Gear Oil", "img": "image/gear.jpg", "hotspot": "eh-4"},
     "tyre": {"label": "Tyre", "img": "image/tyreemas5.png", "hotspot": "tyre"},
 }
+
+
+
+# ── Integrated Manage Car additions (date-first; original manager unchanged) ────
+
+COMPONENT_GROUPS = {
+    "battery": "Power system",
+    "brake": "Safety system",
+    "coolant": "Cooling system",
+    "gear_oil": "Drivetrain",
+    "tyre": "Road contact",
+}
+
+
+def _schedule_snapshot(schedule, vehicle, today=None):
+    """Build a date-first maintenance snapshot and keep mileage as context."""
+    today = today or date.today()
+
+    has_service_date = bool(schedule.last_service_date)
+    baseline_date = schedule.last_service_date
+    if baseline_date is None:
+        baseline_date = timezone.localtime(vehicle.created_at).date()
+
+    due_date = schedule.next_due_date
+    if due_date is None:
+        due_date = baseline_date + relativedelta(
+            months=max(schedule.interval_months, 1),
+        )
+
+    days_until_due = (due_date - today).days
+    if days_until_due < 0:
+        date_status = "overdue"
+    elif days_until_due <= 30:
+        date_status = "due-soon"
+    else:
+        date_status = "healthy"
+
+    has_service_km = schedule.last_service_km not in (None, 0)
+    baseline_km = (
+        schedule.last_service_km
+        if has_service_km
+        else vehicle.mileage
+    )
+    next_due_km = schedule.next_due_km
+    if next_due_km is None or not has_service_km:
+        next_due_km = baseline_km + max(schedule.interval_km, 1)
+
+    km_remaining = next_due_km - vehicle.mileage
+
+    interval_days = max((due_date - baseline_date).days, 1)
+    elapsed_days = max((today - baseline_date).days, 0)
+    date_readiness = max(
+        0,
+        min(100, round(100 * (1 - elapsed_days / interval_days))),
+    )
+
+    if days_until_due < 0:
+        count = abs(days_until_due)
+        date_note = f"{count} day{'s' if count != 1 else ''} overdue"
+    elif days_until_due == 0:
+        date_note = "Due today"
+    else:
+        date_note = (
+            f"Due in {days_until_due} "
+            f"day{'s' if days_until_due != 1 else ''}"
+        )
+
+    if km_remaining < 0:
+        mileage_note = f"{abs(km_remaining):,} km overdue"
+    elif km_remaining == 0:
+        mileage_note = "Mileage threshold reached"
+    else:
+        mileage_note = f"{km_remaining:,} km remaining"
+
+    return {
+        "schedule": schedule,
+        "component": schedule.component,
+        "label": COMPONENT_UI.get(schedule.component, {}).get(
+            "label",
+            schedule.get_component_display(),
+        ),
+        "group": COMPONENT_GROUPS.get(schedule.component, "EV system"),
+        "img": COMPONENT_UI.get(schedule.component, {}).get(
+            "img",
+            "image/default.png",
+        ),
+        "last_service_date": schedule.last_service_date,
+        "last_service_km": schedule.last_service_km,
+        "baseline_date": baseline_date,
+        "due_date": due_date,
+        "days_until_due": days_until_due,
+        "date_note": date_note,
+        "date_status": date_status,
+        "date_readiness": date_readiness,
+        "is_estimated": not has_service_date,
+        "next_due_km": next_due_km,
+        "km_remaining": km_remaining,
+        "mileage_note": mileage_note,
+        "attention_status": date_status,
+        "status_label": {
+            "healthy": "Healthy",
+            "due-soon": "Due soon",
+            "overdue": "Overdue",
+        }[date_status],
+        "is_active": schedule.is_active,
+    }
+
+
+def _build_vehicle_recommendations(vehicle, schedule_cards):
+    """Create Proton e.MAS guidance from data already held by AutoCareX."""
+    if vehicle is None:
+        return []
+
+    recommendations = []
+
+    if vehicle.battery_percent < 40:
+        recommendations.append({
+            "tone": "urgent",
+            "eyebrow": "Charge priority",
+            "title": "Battery level needs attention",
+            "text": (
+                f"{vehicle.nickname} is at {vehicle.battery_percent}%. "
+                "Plan a charge before the next longer journey."
+            ),
+        })
+    elif vehicle.battery_percent < 70:
+        recommendations.append({
+            "tone": "warning",
+            "eyebrow": "Charging plan",
+            "title": "Schedule the next charge",
+            "text": (
+                f"Battery is at {vehicle.battery_percent}%. "
+                "Keep the next charging stop in your journey plan."
+            ),
+        })
+    else:
+        recommendations.append({
+            "tone": "good",
+            "eyebrow": "Battery",
+            "title": "Battery level is healthy",
+            "text": (
+                f"Battery is at {vehicle.battery_percent}%. "
+                "Continue your regular charging routine."
+            ),
+        })
+
+    active_cards = [card for card in schedule_cards if card["is_active"]]
+    overdue = [
+        card for card in active_cards
+        if card["attention_status"] == "overdue"
+    ]
+    due_soon = [
+        card for card in active_cards
+        if card["attention_status"] == "due-soon"
+    ]
+
+    if overdue:
+        recommendations.append({
+            "tone": "urgent",
+            "eyebrow": "Maintenance",
+            "title": (
+                f"{len(overdue)} service "
+                f"item{'s' if len(overdue) != 1 else ''} overdue"
+            ),
+            "text": (
+                "Use the calendar due dates below to prioritise "
+                "the next workshop visit."
+            ),
+        })
+    elif due_soon:
+        recommendations.append({
+            "tone": "warning",
+            "eyebrow": "Upcoming service",
+            "title": (
+                f"{len(due_soon)} item"
+                f"{'s are' if len(due_soon) != 1 else ' is'} due soon"
+            ),
+            "text": (
+                "Book the service before the displayed "
+                "30-day date window closes."
+            ),
+        })
+    else:
+        recommendations.append({
+            "tone": "good",
+            "eyebrow": "Maintenance",
+            "title": "Service schedule is on track",
+            "text": (
+                "No active maintenance item is currently "
+                "inside the 30-day due window."
+            ),
+        })
+
+    model_tips = {
+        "EMAS 5": (
+            "Use AC charging for routine top-ups and "
+            "check tyre pressure regularly."
+        ),
+        "EMAS 7": (
+            "Pre-condition the cabin while plugged in "
+            "to protect everyday range."
+        ),
+        "EMAS PHEV": (
+            "Keep the traction battery charged so EV mode "
+            "is available for shorter trips."
+        ),
+    }
+    recommendations.append({
+        "tone": "info",
+        "eyebrow": "Proton e.MAS",
+        "title": f"{vehicle.model} ownership routine",
+        "text": model_tips.get(
+            vehicle.model,
+            "Keep service records and charging habits consistent.",
+        ),
+    })
+
+    return recommendations
 
 def _seed_schedules(vehicle):
     rules = MAINTENANCE_RULES.get(vehicle.model)
@@ -415,6 +635,59 @@ def vehicle(request):
                     s_resolved=False
                 ).update(s_resolved=True)
 
+        elif action == 'update_interval':
+            car = get_object_or_404(
+                Vehicle,
+                id=request.POST.get('car_id'),
+                owner=request.user,
+            )
+            schedule = get_object_or_404(
+                ServiceSchedule,
+                id=request.POST.get('schedule_id'),
+                vehicle=car,
+            )
+            interval_km = request.POST.get('interval_km')
+            interval_months = request.POST.get('interval_months')
+
+            if interval_km:
+                schedule.interval_km = max(int(interval_km), 1)
+            if interval_months:
+                schedule.interval_months = max(int(interval_months), 1)
+
+            schedule.compute_next_due()
+            schedule.save()
+            messages.success(
+                request,
+                f'{schedule.get_component_display()} interval updated.',
+            )
+            return redirect(
+                f"{reverse('dashboard:vehicle')}"
+                f"?car={car.id}#maintenance-centre"
+            )
+
+        elif action == 'toggle_schedule':
+            car = get_object_or_404(
+                Vehicle,
+                id=request.POST.get('car_id'),
+                owner=request.user,
+            )
+            schedule = get_object_or_404(
+                ServiceSchedule,
+                id=request.POST.get('schedule_id'),
+                vehicle=car,
+            )
+            schedule.is_active = not schedule.is_active
+            schedule.save()
+            messages.success(
+                request,
+                f'{schedule.get_component_display()} '
+                f'{"enabled" if schedule.is_active else "disabled"}.',
+            )
+            return redirect(
+                f"{reverse('dashboard:vehicle')}"
+                f"?car={car.id}#maintenance-centre"
+            )
+
 
         return redirect('dashboard:vehicle')
 
@@ -435,6 +708,12 @@ def vehicle(request):
             "components": {},
             "full_range": None,
             "estimate_range": None,
+            "schedule_cards": [],
+            "recommendations": [],
+            "maintenance_readiness": 100,
+            "selected_overdue_count": 0,
+            "selected_due_soon_count": 0,
+            "selected_healthy_count": 0,
         })
 
     # attach images for all cars
@@ -539,6 +818,46 @@ def vehicle(request):
         full_range = None
         estimate_range = None
 
+    _seed_schedules(selected_car)
+
+    schedule_cards = [
+        _schedule_snapshot(schedule, selected_car)
+        for schedule in selected_car.schedules.all()
+    ]
+    active_schedule_cards = [
+        card for card in schedule_cards
+        if card["is_active"]
+    ]
+
+    maintenance_readiness = (
+        round(
+            sum(
+                card["date_readiness"]
+                for card in active_schedule_cards
+            ) / len(active_schedule_cards)
+        )
+        if active_schedule_cards
+        else 100
+    )
+
+    selected_overdue_count = sum(
+        card["attention_status"] == "overdue"
+        for card in active_schedule_cards
+    )
+    selected_due_soon_count = sum(
+        card["attention_status"] == "due-soon"
+        for card in active_schedule_cards
+    )
+    selected_healthy_count = sum(
+        card["attention_status"] == "healthy"
+        for card in active_schedule_cards
+    )
+
+    recommendations = _build_vehicle_recommendations(
+        selected_car,
+        schedule_cards,
+    )
+
     notifications = Notification.objects.filter(
     user=request.user
     ).order_by("-created_at")
@@ -551,6 +870,12 @@ def vehicle(request):
         'estimate_range': estimate_range,
         'components': components,
         'notifications': notifications,
+        'schedule_cards': schedule_cards,
+        'recommendations': recommendations,
+        'maintenance_readiness': maintenance_readiness,
+        'selected_overdue_count': selected_overdue_count,
+        'selected_due_soon_count': selected_due_soon_count,
+        'selected_healthy_count': selected_healthy_count,
     })
 
 @login_required(login_url='/login/')

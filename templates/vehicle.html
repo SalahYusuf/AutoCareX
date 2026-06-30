@@ -21,6 +21,9 @@
             </div>
 
 
+
+            <div id="vehicle-overview" class="mcx-section-anchor"></div>
+
             <div class="app-container">
 
                 <div class="top-notification">
@@ -28,7 +31,7 @@
                     <div class="user-tools">
 
                         <button class="notification-text-btn" id="notiBtn">
-                            Car ServiceNotification 🔔
+                            Car Service Notification 🔔
                         </button>
 
                         <div class="dropdown-noti" id="notiDropdown">
@@ -829,6 +832,313 @@
                 </section>
 
             </div>
+
+
+            <section class="mcx-maintenance-section" id="maintenance-centre">
+                {% if selected_car %}
+                <header class="mcx-section-header">
+                    <div>
+                        <span>Car care</span>
+                        <h2>Maintenance — {{ selected_car.nickname }}</h2>
+                        <p>
+                            Calendar due dates lead the schedule.
+                            Mileage stays visible as a supporting reference.
+                        </p>
+                    </div>
+
+                    <div class="mcx-header-actions">
+                        <a
+                            href="{% url 'dashboard:log_service' selected_car.id %}"
+                            class="mcx-btn mcx-btn-lime"
+                        >
+                            + Log Service
+                        </a>
+
+                        <a
+                            href="{% url 'dashboard:service_history' selected_car.id %}"
+                            class="mcx-btn mcx-btn-outline"
+                        >
+                            Full History
+                        </a>
+                    </div>
+                </header>
+
+                <div class="mcx-summary-grid">
+                    <div class="overdue">
+                        <span>Overdue</span>
+                        <strong>{{ selected_overdue_count }}</strong>
+                    </div>
+
+                    <div class="due-soon">
+                        <span>Due soon</span>
+                        <strong>{{ selected_due_soon_count }}</strong>
+                    </div>
+
+                    <div class="healthy">
+                        <span>Healthy</span>
+                        <strong>{{ selected_healthy_count }}</strong>
+                    </div>
+
+                    <div class="readiness">
+                        <span>Date readiness</span>
+                        <strong>{{ maintenance_readiness }}%</strong>
+                    </div>
+                </div>
+
+                <div class="mcx-maintenance-grid">
+                    {% for card in schedule_cards %}
+                    <article
+                        class="
+                            mcx-maintenance-card
+                            status-{{ card.attention_status }}
+                            {% if not card.is_active %}is-disabled{% endif %}
+                        "
+                    >
+                        <div class="mcx-maintenance-top">
+                            <div class="mcx-component-id">
+                                <img
+                                    src="{% static card.img %}"
+                                    alt="{{ card.label }}"
+                                >
+
+                                <div>
+                                    <span>{{ card.group }}</span>
+                                    <h3>{{ card.label }}</h3>
+                                </div>
+                            </div>
+
+                            {% if card.is_active %}
+                            <span
+                                class="
+                                    mcx-status-badge
+                                    {{ card.attention_status }}
+                                "
+                            >
+                                {{ card.status_label }}
+                            </span>
+                            {% else %}
+                            <span class="mcx-status-badge disabled">
+                                Disabled
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <p class="mcx-interval-line">
+                            Every
+                            <strong>
+                                {{ card.schedule.interval_months }}
+                                month{{ card.schedule.interval_months|pluralize }}
+                            </strong>
+
+                            <span>
+                                · {{ card.schedule.interval_km|floatformat:0 }}
+                                km reference
+                            </span>
+                        </p>
+
+                        <div class="mcx-date-panel">
+                            <div>
+                                <span>Last service</span>
+
+                                {% if card.last_service_date %}
+                                <strong>
+                                    {{ card.last_service_date|date:"d M Y" }}
+                                </strong>
+
+                                <small>
+                                    {{ card.last_service_km|default:0|floatformat:0 }}
+                                    km
+                                </small>
+                                {% else %}
+                                <strong>No service record</strong>
+
+                                <small>
+                                    Baseline
+                                    {{ card.baseline_date|date:"d M Y" }}
+                                </small>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <span>Next service date</span>
+
+                                <strong>
+                                    {{ card.due_date|date:"d M Y" }}
+                                </strong>
+
+                                <small class="{{ card.date_status }}">
+                                    {{ card.date_note }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="mcx-mileage-note">
+                            <span>Mileage reference</span>
+                            <strong>{{ card.mileage_note }}</strong>
+                        </div>
+
+                        <div class="mcx-maintenance-actions">
+                            <a
+                                href="
+                                    {% url 'dashboard:log_service' selected_car.id %}
+                                    ?component={{ card.component }}
+                                "
+                                class="mcx-btn mcx-btn-lime"
+                            >
+                                Log Service
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{% url 'dashboard:vehicle' %}"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="toggle_schedule"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="car_id"
+                                    value="{{ selected_car.id }}"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="schedule_id"
+                                    value="{{ card.schedule.id }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="mcx-btn mcx-btn-outline"
+                                >
+                                    {% if card.is_active %}
+                                    Disable
+                                    {% else %}
+                                    Enable
+                                    {% endif %}
+                                </button>
+                            </form>
+
+                            <details class="mcx-edit-details">
+                                <summary class="mcx-btn mcx-btn-outline">
+                                    Edit Interval
+                                </summary>
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'dashboard:vehicle' %}"
+                                    class="mcx-edit-form"
+                                >
+                                    {% csrf_token %}
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="update_interval"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="car_id"
+                                        value="{{ selected_car.id }}"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="schedule_id"
+                                        value="{{ card.schedule.id }}"
+                                    >
+
+                                    <label>
+                                        Months
+
+                                        <input
+                                            type="number"
+                                            name="interval_months"
+                                            min="1"
+                                            value="
+                                                {{ card.schedule.interval_months }}
+                                            "
+                                        >
+                                    </label>
+
+                                    <label>
+                                        Kilometres
+
+                                        <input
+                                            type="number"
+                                            name="interval_km"
+                                            min="1"
+                                            value="
+                                                {{ card.schedule.interval_km }}
+                                            "
+                                        >
+                                    </label>
+
+                                    <button
+                                        type="submit"
+                                        class="mcx-btn mcx-btn-dark"
+                                    >
+                                        Save
+                                    </button>
+                                </form>
+                            </details>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="mcx-empty-section">
+                    Register a vehicle in the manager above
+                    to create a maintenance plan.
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="mcx-upgrade-section" id="upgrade-centre">
+                <header class="mcx-section-header">
+                    <div>
+                        <span>Personalised guidance</span>
+                        <h2>Upgrade & ownership suggestions</h2>
+                        <p>
+                            Recommendations use the selected Proton e.MAS
+                            record without replacing your original controls.
+                        </p>
+                    </div>
+
+                    <a
+                        href="{% url 'dashboard:location' %}"
+                        class="mcx-btn mcx-btn-dark"
+                    >
+                        Find Car Workshop
+                    </a>
+                </header>
+
+                <div class="mcx-recommendation-grid">
+                    {% for item in recommendations %}
+                    <article
+                        class="
+                            mcx-recommendation-card
+                            {{ item.tone }}
+                        "
+                    >
+                        <span>{{ item.eyebrow }}</span>
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.text }}</p>
+                    </article>
+                    {% empty %}
+                    <div class="mcx-empty-section">
+                        Select or register a vehicle
+                        to receive personalised guidance.
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
 
             <footer class="footer-container">
 
