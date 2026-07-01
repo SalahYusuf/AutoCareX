@@ -3,6 +3,9 @@ from django.db import models
 from django.utils import timezone
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from dashboard.utils.maintenance_rules import MAINTENANCE_RULES
+
+
 
 # ── Vehicle ────────────────────────────────────────────────────────────────────
 
@@ -127,44 +130,107 @@ class ServiceSchedule(models.Model):
         super().save(*args, **kwargs)
 
     def compute_next_due(self):
-        if self.last_service_km is not None:
-            self.next_due_km = self.last_service_km + self.interval_km
 
-        if self.last_service_date is not None:
-            self.next_due_date = self.last_service_date + relativedelta(
+        base_km = self.last_checked_km or self.last_service_km
+        base_date = self.last_checked_date or self.last_service_date
+
+        self.next_due_km = base_km + self.interval_km
+
+        if base_date:
+            self.next_due_date = base_date + relativedelta(
                 months=self.interval_months
             )
+
+    def get_percent(self, vehicle):
+        if not self.next_due_km:
+            return 100
+
+        used = vehicle.mileage - (self.last_service_km or 0)
+        total = self.next_due_km - (self.last_service_km or 0)
+
+        if total <= 0:
+            return 100
+
+        return max(0, min(100, int(100 - used / total * 100)))
+    
+    @property
+    def next_replacement_date(self):
+
+        if not self.last_service_date:
+            return None
+
+        rules = MAINTENANCE_RULES.get(self.vehicle.model, {})
+        rule = rules.get(self.component)
+
+        if not rule:
+            return None
+
+        replace_months = rule.get("replace_months")
+
+        if not replace_months:
+            return None
+
+        return self.last_service_date + relativedelta(
+            months=replace_months
+        )
+    
+    @property
+    def replacement_percent(self):
+        vehicle_km = self.vehicle.mileage
+
+        base = self.last_service_km or 0
+        total = self.interval_km
+
+        if total <= 0:
+            return 100
+
+        used = vehicle_km - base
+        value = 100 - (used / total * 100)
+
+        return max(0, min(100, int(value)))
 
     # -------------------
     # ALERT SYSTEM
     # -------------------
     @property
     def alert_level(self):
-        vehicle_km = self.vehicle.mileage
         today = date.today()
+        vehicle_km = self.vehicle.mileage
 
-        km_overdue = self.next_due_km is not None and vehicle_km >= self.next_due_km
-        date_overdue = self.next_due_date is not None and today >= self.next_due_date
+        # ======================
+        # 1. CHECKING DUE (PRIORITY 1)
+        # ======================
+        km_overdue = (
+            self.next_due_km is not None and
+            vehicle_km >= self.next_due_km
+        )
+
+        date_overdue = (
+            self.next_due_date is not None and
+            today >= self.next_due_date
+        )
 
         if km_overdue or date_overdue:
-            return 'red'
+            return "checking_due"
 
-        km_close = self.next_due_km is not None and vehicle_km >= (self.next_due_km - 1000)
-        date_close = self.next_due_date is not None and (self.next_due_date - today).days <= 30
+        # ======================
+        # 2. REPLACEMENT DUE
+        # ======================
+        percent = self.replacement_percent  
 
-        if km_close or date_close:
-            return 'yellow'
+        if percent < 24:
+            return "replacement_due"
 
-        return 'green'
-
+        return "good"
+    
     @property
     def alert_label(self):
         return {
-            'green': 'Good',
-            'yellow': 'Due Soon',
-            'red': 'Overdue'
-        }[self.alert_level]
-
+            "checking_due": "CHECKING OVERDUE",
+            "replacement_due": "REPLACEMENT DUE",
+            "good": "GOOD"
+        }.get(self.alert_level, "UNKNOWN")
+    
     # -------------------
     # UI PROGRESS
     # -------------------
@@ -180,10 +246,10 @@ class ServiceSchedule(models.Model):
 
     @property
     def km_remaining(self):
-        if self.next_due_km is None:
-            return None
-        return max(self.next_due_km - self.vehicle.mileage, 0)
-
+        if self.next_due_km:
+            return self.next_due_km - self.vehicle.mileage
+        return None
+    
     @property
     def days_remaining(self):
         if self.next_due_date is None:
@@ -191,12 +257,17 @@ class ServiceSchedule(models.Model):
         return max((self.next_due_date - date.today()).days, 0)
 
 # ── MaintenanceLog ─────────────────────────────────────────────────────────────
+SERVICE_TYPE = [
+    ("checking", "Checked"),
+    ("replacement", "Replacement"),
+]
 
 class MaintenanceLog(models.Model):
 
     vehicle      = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='logs')
     schedule     = models.ForeignKey(ServiceSchedule, on_delete=models.SET_NULL, null=True, blank=True, related_name='logs')
     component    = models.CharField(max_length=20)
+    service_type = models.CharField(max_length=20,choices=SERVICE_TYPE,default="checking")
     description  = models.TextField(blank=True)
     odometer     = models.PositiveIntegerField(help_text='Odometer reading at service (km)')
     service_date = models.DateField(default=date.today)

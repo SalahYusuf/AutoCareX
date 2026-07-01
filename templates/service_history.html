@@ -69,6 +69,7 @@
                 <tr>
                     <th>Date</th>
                     <th>Component</th>
+                    <th>Status</th>
                     <th>Odometer</th>
                     <th>Description</th>
                     <th>Cost (RM)</th>
@@ -76,16 +77,27 @@
                 </tr>
             </thead>
             <tbody>
-                {% for log in logs %}
-                <tr>
-                    <td>{{ log.service_date|date:"d M Y" }}</td>
-                    <td><span class="comp-badge">{{ log.component|title }}</span></td>
-                    <td>{{ log.odometer|floatformat:0 }} km</td>
-                    <td>{{ log.description|default:"—" }}</td>
-                    <td>{% if log.cost %}RM {{ log.cost }}{% else %}—{% endif %}</td>
-                    <td>{{ log.notes|default:"—" }}</td>
-                </tr>
-                {% endfor %}
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.service_date|date:"d M Y" }}</td>
+
+                <td>
+                    <span class="comp-badge">{{ log.component|title }}</span>
+                </td>
+                <td>
+                    {% if log.service_type == "replacement" %}
+                        <span style="color:red;font-weight:700;">Replacement</span>
+                    {% else %}
+                        <span style="color:#1D9E75;font-weight:700;">Checked</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ log.odometer|floatformat:0 }} km</td>
+                <td>{{ log.description|default:"—" }}</td>
+                <td>{% if log.cost %}RM {{ log.cost }}{% else %}—{% endif %}</td>
+                <td>{{ log.notes|default:"—" }}</td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
         {% else %}

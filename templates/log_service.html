@@ -44,43 +44,59 @@
             <div class="msg msg-error">{{ message }}</div>
             {% endfor %}{% endif %}
 
-            <form method="POST">
+             <form method="POST">
                 {% csrf_token %}
 
+                <!-- Component -->
                 <div class="form-group">
                     <label>Component</label>
-                    <select name="component">
+                    <select name="component" id="componentSelect">
                         {% for sched in schedules %}
-                        <option value="{{ sched.component }}" {% if request.GET.component == sched.component %}selected{% endif %}>
-                            {{ sched.get_component_display }}
-                        </option>
+                            <option value="{{ sched.component }}">
+                                {{ sched.get_component_display }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Description</label>
-                    <input type="text" name="description" placeholder="e.g. Battery health check at service centre">
+                    <label>Doing Action</label>
+                    <select name="action" id="actionSelect">
+                        <option value="checking">Checking</option>
+                        <option value="replacement">Replacement</option>
+                    </select>
                 </div>
 
+                <!-- Description -->
                 <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" name="description" placeholder="eg. Battery health check at service centre">
+                </div>
+
+                <!-- Odometer -->
+                <div class="form-group" id="odometerField">
                     <label>Odometer at Service (km)</label>
                     <input type="number" name="odometer" value="{{ car.mileage }}" min="0">
                 </div>
 
-                <div class="form-group">
-                    <label>Service Date</label>
-                    <input type="date" name="service_date" value="{{ today }}">
-                </div>
+                <!-- 🔥 EXTRA FIELDS (ONLY FOR replacement) -->
+                <div id="extraFields">
 
-                <div class="form-group">
-                    <label>Cost (RM) <span style="color:#aaa;font-size:12px;">optional</span></label>
-                    <input type="number" name="cost" step="0.01" min="0" placeholder="0.00">
-                </div>
+                    <div class="form-group">
+                        <label>Service Date</label>
+                        <input type="date" name="service_date" value="{{ today }}">
+                    </div>
 
-                <div class="form-group">
-                    <label>Notes <span style="color:#aaa;font-size:12px;">optional</span></label>
-                    <textarea name="notes" placeholder="Any additional notes..."></textarea>
+                    <div class="form-group">
+                        <label>Cost (RM)</label>
+                        <input type="number" name="cost" step="0.01" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="notes"></textarea>
+                    </div>
+
                 </div>
 
                 <button type="submit" class="submit-btn">Save Log</button>
@@ -114,6 +130,24 @@
     </footer>
 
 </div>
-<script src="{% static 'js/script.js' %}"></script>
+<script>
+function toggleFields() {
+
+    const action = document.getElementById("actionSelect").value;
+
+    const odometer = document.getElementById("odometerField");
+
+    if (action === "replacement") {
+        odometer.style.display = "none";
+    } else {
+        odometer.style.display = "block";
+    }
+}
+
+document.getElementById("actionSelect")
+        .addEventListener("change", toggleFields);
+
+window.onload = toggleFields;
+</script>
 </body>
 </html>

@@ -936,7 +936,9 @@ def log_service(request, vehicle_id):
     car = get_object_or_404(Vehicle, id=vehicle_id, owner=request.user)
 
     if request.method == 'POST':
+        action = request.POST.get("action")
         component    = request.POST.get('component', '').strip()
+        service_type = request.POST.get('service_type', 'checking')
         description  = request.POST.get('description', '').strip()
         odometer     = request.POST.get('odometer', '0')
         service_date = request.POST.get('service_date', '')
@@ -961,6 +963,7 @@ def log_service(request, vehicle_id):
             vehicle      = car,
             schedule     = sched,
             component    = component,
+            service_type = action,
             description  = description,
             odometer     = odometer_val,
             service_date = parsed_date,
@@ -975,11 +978,34 @@ def log_service(request, vehicle_id):
 
         # Update schedule's last service info
         if sched:
-            sched.last_service_km   = odometer_val
-            sched.last_service_date = parsed_date
-            sched.compute_next_due()
-            sched.save()
+            # =========================
+            # REPLACEMENT
+            # =========================
+            if action == "replacement":
 
+                # reset lifecycle
+                sched.last_service_km = odometer_val
+                sched.last_service_date = parsed_date
+
+                # reset checking reference (optional but OK for your idea)
+                sched.last_checked_km = odometer_val
+                sched.last_checked_date = parsed_date
+
+            # =========================
+            # CHECKING
+            # =========================
+            elif action == "checking":
+
+                sched.last_checked_km = odometer_val
+                sched.last_checked_date = parsed_date
+
+
+            # =========================
+            # ALWAYS UPDATE CHECKING NEXT DUE
+            # =========================
+            sched.compute_next_due()
+
+            sched.save()
         messages.success(request, f'Service logged for {component}.')
         return redirect('dashboard:maintenance', vehicle_id=vehicle_id)
 
