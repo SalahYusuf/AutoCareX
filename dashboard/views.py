@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import logout as auth_logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
@@ -1279,6 +1280,21 @@ def profile(request):
                     request,
                     "Password changed successfully.",
                 )
+
+        elif action == "delete_account":
+            user = request.user
+
+            if user_profile.profile_picture:
+                user_profile.profile_picture.delete(save=False)
+
+            auth_logout(request)
+            user.delete()
+
+            messages.success(
+                request,
+                "Your account has been deleted.",
+            )
+            return redirect("dashboard:index")
 
         return redirect("dashboard:profile")
 

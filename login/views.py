@@ -115,26 +115,32 @@ def login_view(request):
             messages.error(request, "Please fill in all fields.")
             return render(request, "login/login.html")
 
-        # Allow login with either username or email
-        user = None
+        # Allow login with either username or email, case-insensitively.
+        matched = User.objects.filter(
+            username__iexact=identifier
+        ).first()
 
-        # Try username first
-        user = authenticate(request, username=identifier, password=password)
+        if matched is None:
+            matched = User.objects.filter(
+                email__iexact=identifier
+            ).first()
 
-        # If that failed, try looking up by email
-        if user is None:
-            try:
-                matched = User.objects.get(email__iexact=identifier)
-                user = authenticate(request, username=matched.username, password=password)
-            except User.DoesNotExist:
-                pass
-
-        if user is None:
+        if matched is None or not matched.check_password(password):
             messages.error(request, "Invalid username/email or password.")
             return render(request, "login/login.html")
 
-        if not user.is_active:
+        if not matched.is_active:
             messages.error(request, "Please verify your email before logging in.")
+            return render(request, "login/login.html")
+
+        user = authenticate(
+            request,
+            username=matched.username,
+            password=password,
+        )
+
+        if user is None:
+            messages.error(request, "Unable to log in. Please try again.")
             return render(request, "login/login.html")
 
         auth_login(request, user)
@@ -163,7 +169,7 @@ def forgot_password_view(request):
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             reset_path = reverse("login:reset_password", kwargs={"uidb64": uidb64, "token": token})
-            reset_url = f"{settings.SITE_URL}{reset_path}"
+            reset_url = request.build_absolute_uri(reset_path)
 
             if settings.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend":
                 print(f"\nAutoCareX password reset link for {email}: {reset_url}\n")

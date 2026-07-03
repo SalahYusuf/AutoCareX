@@ -16,7 +16,6 @@
 
         <input type="checkbox" id="modal-toggle" hidden>
         <input type="checkbox" id="delete-toggle" hidden>
-        <input type="checkbox" id="switch-toggle" hidden>
         
         {% include "partials/navbar.html" %}
 
@@ -28,7 +27,6 @@
                     <a class="nav-tab active">Profile</a>
                     <label for="modal-toggle" class="nav-tab" id="openChangeModal">Change Password</label>
                     <label for="delete-toggle" class="nav-tab" >Delete Account</label>
-                    <label for="switch-toggle" class="nav-tab" >Switch Account</label>
                 </nav>
 
             </div>
@@ -201,12 +199,22 @@
                     </div>
                 </div>
 
-                <form onsubmit="event.preventDefault();">
+                <form method="POST" action="{% url 'dashboard:profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="modal-group">
+                        <label>Current Password</label>
+                        <div class="password-input-field">
+                            <input type="password" name="current_password" id="currentPassword" placeholder="Enter current password" required>
+                            <span class="eye-toggle-icon">👁</span>
+                        </div>
+                    </div>
 
                     <div class="modal-group">
                         <label>New Password</label>
                         <div class="password-input-field">
-                            <input type="password" id="newPassword" placeholder="Enter new password">
+                            <input type="password" name="new_password" id="newPassword" placeholder="Enter new password" required>
                             <span class="eye-toggle-icon">👁</span>
                         </div>
                     </div>
@@ -214,7 +222,7 @@
                     <div class="modal-group">
                         <label>Confirm Password</label>
                         <div class="password-input-field">
-                            <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                            <input type="password" name="confirm_password" id="confirmPassword" placeholder="Confirm new password" required>
                             <span class="eye-toggle-icon">👁</span>
                         </div>
                     </div>
@@ -245,37 +253,16 @@
                     Are you sure you want to delete your account? All of your registered car profile data, personal history, and settings will be permanently removed from Proton Emas.
                 </div>
 
-                <div class="delete-actions">
-                    <label for="delete-toggle" class="btn-cancel">Cancel</label>
-                    
-                    <button type="button" class="btn-delete-submit">Delete Permanently</button>
-                </div>
-            </div>
-                
-        </div>
+                <form method="POST" action="{% url 'dashboard:profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_account">
 
-        <div class="switch-overlay">
-
-            <div class="switch-box">
-                <label for="switch-toggle" class="close-x-btn">&times;</label>
-                
-                <div class="switch-header">
-                    <div class="icon-badge-switch">🔀</div>
-                    <div class="modal-title">
-                        <h3>Switch Account</h3>
-                        <p>You are about to switch to another account</p>
+                    <div class="delete-actions">
+                        <label for="delete-toggle" class="btn-cancel">Cancel</label>
+                        
+                        <button type="submit" class="btn-delete-submit">Delete Permanently</button>
                     </div>
-                </div>
-
-                <div class="delete-hint-text">
-                    Are you sure you want to switch accounts? Your current session will be logged out, and you will need to sign in again to access another account in Proton Emas.
-                </div>
-
-                <div class="switch-actions">
-                    <label for="switch-toggle" class="btn-cancel">Cancel</label>
-                    
-                    <button type="button" class="btn-switch-submit">Switch Account</button>
-                </div>
+                </form>
             </div>
                 
         </div>
@@ -301,7 +288,7 @@
                         field.setAttribute("readonly", true);
                     });
 
-                    // save
+                    
                     if (field.tagName === 'INPUT' && !field.classList.contains('unchangeable')) {
                         field.addEventListener('keydown', (e) => {
                             if (e.key === 'Enter') {
