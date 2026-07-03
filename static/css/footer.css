@@ -1,0 +1,21 @@
+.site-footer {
+    display: flex;
+    width: min(1240px, calc(100% - 48px));
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+    padding: 0 0 36px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.site-footer > div {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.site-footer img {
+    width: auto;
+    height: 34px;
+}

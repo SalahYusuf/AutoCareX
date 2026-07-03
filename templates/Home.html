@@ -8,6 +8,7 @@
 
         <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
         <link rel="stylesheet" href="{% static 'css/trans.css' %}">
+        <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     </head>
 
@@ -302,7 +303,15 @@
 
                 </div>
 
-                <footer class="footer-container">
+                <footer class="site-footer">
+                    <div>
+                        <img src="{% static 'image/autocarexlogoblack.png' %}" alt="AutoCareX">
+                        <span>Smarter care for your Proton e.MAS.</span>
+                    </div>
+                    <span>© {% now "Y" %} AutoCareX</span>
+                </footer>
+
+                <!-- <footer class="footer-container">
 
                         <div class="footer-top">
 
@@ -344,7 +353,7 @@
                             Copyright © 2026 Brand | All Rights Reserved
                             </div>
                         </div>
-                </footer>
+                </footer> -->
         </div>
 
         <script src="{% static 'js/script.js' %}"></script>
