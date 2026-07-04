@@ -1,41 +1,26 @@
+/* please work omgg */
 
-
-/* ===== OVERLAY ===== */
-.page-overlay {
-  position: fixed;
-  inset: 0;
-  background: #0f172a;
-  z-index: 9999;
-
-  animation: overlayMove 0.8s ease forwards;
+body {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: pageFadeIn 0.35s ease forwards;
 }
 
-/* overlay */
-@keyframes overlayMove {
-  0% {
-    transform: translateY(-100%);
-  }
-  40% {
-    transform: translateY(0%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
+body.page-transition-out {
+    animation: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-/* ===== PAGE CONTENT ===== */
-.page-content {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: contentIn 0.8s ease forwards;
-  animation-delay: 0.4s;
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-
-@keyframes contentIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
