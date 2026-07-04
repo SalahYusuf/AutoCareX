@@ -27,5 +27,10 @@ nextTrigger.addEventListener('click',() => {
     startAutoPlay();
 })
 
+function flipCard(card) {
+    // change is-flipped class to flip the card
+    card.classList.toggle('is-flipped');
+}
+
 startAutoPlay();
 

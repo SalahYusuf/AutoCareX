@@ -160,12 +160,13 @@
                                 <input type="hidden" name="action" value="add_car">
 
                                 <div class="form-group">
-                                    <label>1. Car Nickname</label>
+                                    <label>1. Car Plate Number</label>
 
                                     <input 
                                     type="text" 
+                                    id="carPlate"
                                     name="nickname" 
-                                    placeholder="Please Enter Car Nickname" 
+                                    placeholder="Please Enter Car Plate Number" 
                                     required>
                                 </div>
 
@@ -854,6 +855,22 @@
                 document.getElementById(listID).style.display = "none"; // close list
             }
 
+        const carPlate = document.getElementById("carPlate");
+
+        carPlate.addEventListener("input", function () {
+            let value = this.value.toUpperCase();
+
+            // delete all space in the value input
+            value = value.replace(/\s+/g, "");
+
+            // stay only the a-z and 0-9
+            value = value.replace(/[^A-Z0-9]/g, "");
+
+            // adding space
+            value = value.replace(/^([A-Z]+)(\d+)$/, "$1 $2");
+
+            this.value = value;
+        });
         </script>
 
     </body>

@@ -6,16 +6,15 @@
         <link rel="icon" href="{% static 'image/autocarexlogoblack.png' %}">
         <title>AutoCareX - Home</title>
 
-        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
         <link rel="stylesheet" href="{% static 'css/trans.css' %}">
         <link rel="stylesheet" href="{% static 'css/footer.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+        <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+        <link rel="stylesheet" href="{% static 'css/styleHome.css' %}">
     </head>
 
     <body>
 
             {% include "partials/navbar.html" %}
-
 
         <div class="page-content">
 
@@ -316,6 +315,201 @@
 
                 </div>
 
+                <style>
+                    .fourth-container {
+                        font-family: Georgia, "Times New Roman";
+                        margin: 80px auto;
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 30px;
+                        width: 100%;
+                        max-width: 1100px;
+                    }
+
+                    .card-container {
+                        height: 400px; 
+                        perspective: 1000px; /* make 3d */
+                    }
+
+                    
+                    .card-inner {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                        text-align: center;
+                        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+                        transform-style: preserve-3d; /* make usre the content inside 3d*/
+                        cursor: pointer; 
+                        border-radius: 16px;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                    }
+
+                    
+                    .card-container:hover .card-inner {
+                        transform: scale(1.03);
+                        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+                    }
+
+                    
+                    .card-container.is-flipped .card-inner {
+                        transform: rotateY(180deg) scale(1.03);
+                    }
+
+                    /* 4. front and back have same style*/
+                    .card-front, .card-back {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        backface-visibility: hidden; /* back cant seen*/
+                        border-radius: 16px;
+                        overflow: hidden;
+                        background-color: #fff;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    
+                    .card-front {
+                        z-index: 2;
+                    }
+
+                    .avatar-box {
+                        width: 100%;
+                        height: 65%;
+                        background-color: #f1f3f5;
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-end;
+                        overflow: hidden;
+                    }
+
+                    .avatar-placeholder {
+                        width: 80%;
+                        height: 90%;
+                        background: linear-gradient(to top, #ccc, #e3e769);
+                        border-radius: 20px 20px 0 0;
+                    }
+
+                    .avatar-placeholder img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;   /* 👈 关键 */
+                        background: transparent;
+                    }
+
+                    .info-box {
+                        padding: 20px;
+                        flex-grow: 1;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    .info-box h3 {
+                        font-size: 1.2rem;
+                        color: #333;
+                        margin-bottom: 5px;
+                    }
+
+                    .info-box p {
+                        font-size: 0.9rem;
+                        color: #777;
+                    }
+
+                   
+                    .card-back {
+                        box-sizing: border-box; /* ensure padding doesn't affect size */
+                        transform: rotateY(180deg);
+                        background-color:#0f0f0f;
+                        color: #ffffff;
+                        padding: 20px;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    .card-back h3 {
+                        margin-bottom: 15px;
+                        font-size: 1.4rem;
+                    }
+
+                    .card-back p {
+                        font-size: 0.95rem;
+                        line-height: 1.6;
+                        opacity: 0.9;
+                    }
+
+
+                </style>
+
+                <div style="text-align: center;">
+                    <span class="badge">About Developers</span>
+                </div>
+
+                <div class="fourth-container">
+                    
+
+                    <div class="card-container" onclick="flipCard(this)">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="avatar-box">
+                                    <div class="avatar-placeholder">
+                                        <img src="{% static 'image/salah.png' %}">
+                                    </div> 
+                                </div>
+                                <div class="info-box">
+                                    <h3>Salahudin Yusuf Bin Noorazmi</h3>
+                                    <p>Backend Developer</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <h3>About Salah</h3>
+                                <p>Handled the login system, authentication and profile, car maintenance, and few UI improvements such as contact page</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="flipCard(this)">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="avatar-box">
+                                    <div class="avatar-placeholder">
+                                        <img src="{% static 'image/siew.png' %}">
+                                    </div>
+                                </div>
+                                <div class="info-box">
+                                    <h3>Siew Boon Keat</h3>
+                                    <p>Data Logic & Testing Developer</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <h3>About Siew</h3>
+                                <p>designed only for the login and sign up page, and handled the car workshop page with map and details of the workshop such as address and phone number</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="flipCard(this)">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="avatar-box">
+                                    <div class="avatar-placeholder">
+                                        <img src="{% static 'image/chew.png' %}">
+                                    </div>
+                                </div>
+                                <div class="info-box">
+                                    <h3>Chew Zhen Yang</h3>
+                                    <p>Frontend & UI/UX Developer</p>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <h3>About Chew</h3>
+                                <p>Responsible for HTML/CSS of homepage, vehicle, and profile pages, plus vehicle calculations and frontend-backend integration.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
                 <footer class="site-footer">
                     <div>
                         <img src="{% static 'image/autocarexlogoblack.png' %}" alt="AutoCareX">
@@ -369,7 +563,45 @@
                 </footer> -->
         </div>
 
-        <script src="{% static 'js/script.js' %}"></script>
+        <script>
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            const nextTrigger = document.querySelector('.next-trigger');
+
+            let currentIndex = 0;
+            let timer = null;
+
+            function gotoslide(index) {
+                slides[currentIndex].classList.remove('active');
+                dots[currentIndex].classList.remove('active');
+
+                currentIndex = (index + slides.length) % slides.length;
+
+                slides[currentIndex].classList.add('active');
+                dots[currentIndex].classList.add('active');
+            }
+
+            function startAutoPlay() {
+                timer = setInterval(() => {
+                    gotoslide(currentIndex + 1);
+                }, 5000);  // 5s to change picture and the index will += 1
+            }
+
+            nextTrigger.addEventListener('click',() => {
+                clearInterval(timer);
+                gotoslide(currentIndex + 1);
+                startAutoPlay();
+            })
+
+            function flipCard(card) {
+                // change is-flipped class to flip the card
+                card.classList.toggle('is-flipped');
+            }
+
+            startAutoPlay();
+
+
+        </script>
 
     </body>
  
