@@ -33,9 +33,11 @@ ALLOWED_HOSTS = [
     "autocarex.onrender.com",
     "localhost",
     "127.0.0.1",
+    "SalahYusuf.pythonanywhere.com"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://autocarex.onrender.com",
+    "https://SalahYusuf.pythonanywhere.com"
 ]
 
 
