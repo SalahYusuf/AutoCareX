@@ -54,11 +54,24 @@
 
                 <div class="second-container" id="about">
 
-                    <div class="sub-container2-1">
+                    <div class="sub-container2-1" style="padding-top: 258px;">
                             <span class="badge">About Us</span>
                     </div>
 
                     <div class="sub-container2-2">
+
+                        {% if user.is_authenticated %}
+                        <p style="
+                            margin: 0 0 18px 0;
+                            color: #1a1a1a;
+                            font-size: 52px;
+                            font-weight: 800;
+                            width: 100%;
+                        ">
+                            Welcome, {{ user.username }}
+                        </p>
+                        {% endif %}
+                        <br>
 
                         <h1>Discover Why AutoCareX is <br> Your Perfect Choice</h1>
                         <p class="description">
@@ -100,13 +113,13 @@
                 </div>
 
 
-                <!-- ===== DASHBOARD SECTION (logged in users) ===== -->
+                <!-- ===== OVERVIEW SECTION (logged in users) ===== -->
                 {% if user.is_authenticated %}
                 <div class="dashboard-section" id="dashboard">
 
                     <div class="dash-header">
-                        <span class="badge">My Dashboard</span>
-                        <h1>Welcome back,<br>{{ user.username }}</h1>
+                        <span class="badge">Manage Car Overview</span>
+                        <h1>Howdy!,<br>{{ user.username }}</h1>
                         <p class="dash-subtext">Here is a quick overview of your vehicles and upcoming maintenance.</p>
                     </div>
 
@@ -306,7 +319,7 @@
                 <footer class="site-footer">
                     <div>
                         <img src="{% static 'image/autocarexlogoblack.png' %}" alt="AutoCareX">
-                        <span>Smarter care for your Proton e.MAS.</span>
+                        <span>Smarter Care for Your Proton e.MAS.</span>
                     </div>
                     <span>© {% now "Y" %} AutoCareX</span>
                 </footer>
